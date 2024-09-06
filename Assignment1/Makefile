@@ -1,10 +1,11 @@
-#
-# example Makefile to build an executable named myprog from myprog.cpp
-#
-PROG=performance
+C++flags = g++ -std=c++20 -Wall -pthread
 
-all: $(PROG).cpp
-	g++ -std=c++11 -Wall -pthread $(PROG).cpp -o $(PROG)
+all:
+	$(C++flags) performance.cpp -o performance
+	$(C++flags) non-determinism.cpp -o non-determinism
+	$(C++flags) shared-variable.cpp -o shared-variable
+	$(C++flags) dining.cpp -o dining
+	$(C++flags) diningSolved.cpp -o diningSolved
 
 clean:
-	$(RM) $(PROG)
+	$(RM) *.exe
