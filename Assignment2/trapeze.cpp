@@ -64,17 +64,17 @@ int main(int argc, char *argv[]) {
         std::cerr << "Error: Yoo bro don't go crazy on the number of threads ok?!.\n";
         return 1;
     }
+    auto start_time = std::chrono::high_resolution_clock::now();
 
     double a = 0.0; 
     double b = 1.0;  
     double result = 0.0;
-    std::mutex result_mutex;
 
     std::vector<std::thread> threads;
     int trapezoids_per_thread = num_trapezoids / num_threads;
     double interval_length = (b - a) / num_threads;
 
-    auto start_time = std::chrono::high_resolution_clock::now();
+    
 
     for (int i = 0; i < num_threads; ++i) {
         double local_a = a + i * interval_length;
