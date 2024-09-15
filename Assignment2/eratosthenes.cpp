@@ -8,36 +8,46 @@
 #include <chrono>
 #include <vector>
 
+//not currently used, but if we want to have dynamic partition of data we might need it
 std::mutex mutex;
 
 
 
 
-std::vector<bool> eratosthenes(int start, int end, std::vector<bool> is_prime ) { //max should be end?
-    for (int k = start; k * k <= end; ++k) {
+std::vector<int> initial_primes(int max, std::vector<bool> &is_prime) { //compute initial primes first, because they can be used for the threads
+    int limit = static_cast<int>(std::sqrt(max));
+    is_prime[0] = is_prime[1] = false;
+    std::vector<int> init_primes;
+
+    for (int k = 2; k <= limit; ++k) {
         if (is_prime[k]) {
-            for (int multiple = k * k; multiple <= end; multiple += k) {
+            init_primes.push_back(k);
+            for (int multiple = k * k; multiple <= limit; multiple += k) {
                 is_prime[multiple] = false;
             }
         }
     }
-    return is_prime;
+    return init_primes;
 }
 
-std::vector<bool> thread_primes(int start,int end, std::vector<bool> &global_is_prime) {
-    
-    // create local_is_prime storage using start and end (could be empty vecotr?)
-    std::vector<bool> local((end - start) + 1, true);
-    // call eratosthenes on local_is_prime
-    std::vector<bool> local_primes = eratosthenes(start, end, local);
-    // try to use lock to write local_is_prime to is_prime ELSE continue computing ertosthenes || just be done and hand to master?
+void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<bool>& is_prime) { //the threads compute primes on their allocated segment of the vector
 
-    //mutex.lock();
-    for (int i = 0; i <= end - start; ++i) {
-        global_is_prime[start + i] = local_primes[i];
+    for (int p : init_primes) {
+
+    int first_multiple = p * p;
+    if (first_multiple < start) {
+        if (start % p == 0) {
+            first_multiple = start;
+        } else {
+            first_multiple = start + (p - (start % p));
+        }
     }
-    //mutex.unlock();
-    return local_primes;
+
+    for (int multiple = first_multiple; multiple <= end; multiple += p) {
+        is_prime[multiple - start] = false;
+    }
+}
+    return;
     
 }
 
@@ -70,31 +80,34 @@ int main(int argc, char *argv[]) {
         std::cerr << "Error: Threads and max must be positive.\n";
         return 1;
     }
+    if (num_threads > 64){
+        std::cerr << "Error: Yoo bro don't go crazy on the number of threads ok?!.\n";
+        return 1;
+    }
     auto start_time = std::chrono::high_resolution_clock::now();
 
     std::vector<bool> is_prime(max + 1, true);
-    is_prime[0] = is_prime[1] = false;
-    int sqrt_max = static_cast<int>(std::sqrt(max));
+    std::vector<int> init_primes = initial_primes(max, is_prime);
 
     int range_start = static_cast<int>(std::sqrt(max)) + 1;
     int range_length = max - range_start + 1;
-    int chunk_size = (range_length + num_threads - 1) / num_threads;
+    int chunk_size = range_length/ num_threads;
 
 
     std::vector<std::thread> threads;
 
     
 
-    eratosthenes(2, sqrt_max, is_prime);
+    
 
 
 
     for (int i = 0; i < num_threads; ++i) {
         int start = range_start + i * chunk_size;
-        int end = (i == num_threads - 1) ? max : start + chunk_size - 1;
+        int end = (i == num_threads - 1) ? max : start + chunk_size - 1; //edge case for if it is "last" thread
 
 
-        threads.emplace_back(thread_primes, start, end, std::ref(is_prime));
+        threads.emplace_back(thread_primes, start, end, std::cref(init_primes),std::ref(is_prime));
     }
 
 
@@ -106,8 +119,17 @@ int main(int argc, char *argv[]) {
 
     auto end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end_time - start_time;
-
     std::cout << "Time: " << elapsed.count() << " seconds" << std::endl;
+
+    //for validation
+    int n_primes = 0;
+    for (int i=2; i <= max; i++){
+        
+        if (is_prime[i]) {
+            n_primes++;
+        }
+    }
+    std::cout << "Number of primes between 2 and " << max << " is " << n_primes <<std::endl;
 
     return 0;
 }
