@@ -11,25 +11,34 @@
 std::mutex mutex;
 
 
-void thread_primes(int start,int end) {
-    
-    // create local_is_prime storage using start and end (could be empty vecotr?    )
-    // call eratosthenes on local_is_prime
-    // try to use lock to write local_is_prime to is_prime ELSE continue computing ertosthenes || just be done and hand to master?
-    return ;
-    
-}
 
-std::vector<bool> eratosthenes(int start, int max, std::vector<bool> is_prime ) { //max should be end?
-    //change k to a lower bound?
-    for (int k = start; k * k <= max; ++k) {
+
+std::vector<bool> eratosthenes(int start, int end, std::vector<bool> is_prime ) { //max should be end?
+    for (int k = start; k * k <= end; ++k) {
         if (is_prime[k]) {
-            for (int multiple = k * k; multiple <= max; multiple += k) {
+            for (int multiple = k * k; multiple <= end; multiple += k) {
                 is_prime[multiple] = false;
             }
         }
     }
     return is_prime;
+}
+
+std::vector<bool> thread_primes(int start,int end, std::vector<bool> &global_is_prime) {
+    
+    // create local_is_prime storage using start and end (could be empty vecotr?)
+    std::vector<bool> local((end - start) + 1, true);
+    // call eratosthenes on local_is_prime
+    std::vector<bool> local_primes = eratosthenes(start, end, local);
+    // try to use lock to write local_is_prime to is_prime ELSE continue computing ertosthenes || just be done and hand to master?
+
+    //mutex.lock();
+    for (int i = 0; i <= end - start; ++i) {
+        global_is_prime[start + i] = local_primes[i];
+    }
+    //mutex.unlock();
+    return local_primes;
+    
 }
 
 void print_help() {
@@ -69,14 +78,14 @@ int main(int argc, char *argv[]) {
 
     int range_start = static_cast<int>(std::sqrt(max)) + 1;
     int range_length = max - range_start + 1;
-    int chunk_size = range_length / num_threads;
+    int chunk_size = (range_length + num_threads - 1) / num_threads;
 
 
     std::vector<std::thread> threads;
 
     
 
-    std::vector<bool> initial_primes = eratosthenes(2, sqrt_max, is_prime);
+    eratosthenes(2, sqrt_max, is_prime);
 
 
 
@@ -85,7 +94,7 @@ int main(int argc, char *argv[]) {
         int end = (i == num_threads - 1) ? max : start + chunk_size - 1;
 
 
-        threads.emplace_back(eratosthenes, start, end, max);
+        threads.emplace_back(thread_primes, start, end, std::ref(is_prime));
     }
 
 
