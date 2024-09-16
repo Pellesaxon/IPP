@@ -8,13 +8,8 @@
 #include <chrono>
 #include <vector>
 
-//not currently used, but if we want to have dynamic partition of data we might need it
-std::mutex mutex;
 
-
-
-
-std::vector<int> initial_primes(int max, std::vector<bool> &is_prime) { //compute initial primes first, because they can be used for the threads
+std::vector<int> initial_primes(int max, std::vector<bool> &is_prime) { //compute initial primes first up to sqrt(max) (sequentially), because they are used for parallel part
     int limit = static_cast<int>(std::sqrt(max));
     std::vector<int> init_primes;
 
@@ -29,18 +24,22 @@ std::vector<int> initial_primes(int max, std::vector<bool> &is_prime) { //comput
     return init_primes;
 }
 
-void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<bool>& is_prime, int global_start) { //the threads compute primes on their allocated segment of the vector
+void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<bool>& is_prime, int range_start) { //the threads compute primes on their local vector
 
     for (int p : init_primes) {
 
         int first_multiple = p * p;
 
         if (first_multiple < start) {
-            first_multiple = ((start + p - 1) / p) * p;
+        if (start % p == 0) {
+            first_multiple = start;
+        } else {
+            first_multiple = start + (p - (start % p));
         }
+    }
 
         for (int multiple = first_multiple; multiple <= end; multiple += p) {
-            is_prime[multiple - global_start] = false;
+            is_prime[multiple - range_start] = false;
         }
     }
     return;
@@ -129,7 +128,7 @@ int main(int argc, char *argv[]) {
             n_primes++;
         }
     }
-    std::cout << "Number of primes between 2 and " << max << " is " << n_primes <<std::endl;
+    std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
 
     return 0;
 }
