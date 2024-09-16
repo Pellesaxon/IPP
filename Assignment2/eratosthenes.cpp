@@ -16,7 +16,6 @@ std::mutex mutex;
 
 std::vector<int> initial_primes(int max, std::vector<bool> &is_prime) { //compute initial primes first, because they can be used for the threads
     int limit = static_cast<int>(std::sqrt(max));
-    is_prime[0] = is_prime[1] = false;
     std::vector<int> init_primes;
 
     for (int k = 2; k <= limit; ++k) {
@@ -30,23 +29,20 @@ std::vector<int> initial_primes(int max, std::vector<bool> &is_prime) { //comput
     return init_primes;
 }
 
-void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<bool>& is_prime) { //the threads compute primes on their allocated segment of the vector
+void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<bool>& is_prime, int global_start) { //the threads compute primes on their allocated segment of the vector
 
     for (int p : init_primes) {
 
-    int first_multiple = p * p;
-    if (first_multiple < start) {
-        if (start % p == 0) {
-            first_multiple = start;
-        } else {
-            first_multiple = start + (p - (start % p));
+        int first_multiple = p * p;
+
+        if (first_multiple < start) {
+            first_multiple = ((start + p - 1) / p) * p;
+        }
+
+        for (int multiple = first_multiple; multiple <= end; multiple += p) {
+            is_prime[multiple - global_start] = false;
         }
     }
-
-    for (int multiple = first_multiple; multiple <= end; multiple += p) {
-        is_prime[multiple - start] = false;
-    }
-}
     return;
     
 }
@@ -84,9 +80,11 @@ int main(int argc, char *argv[]) {
         std::cerr << "Error: Yoo bro don't go crazy on the number of threads ok?!.\n";
         return 1;
     }
-    auto start_time = std::chrono::high_resolution_clock::now();
+
+    auto start_time = std::chrono::high_resolution_clock::now(); //start time here??
 
     std::vector<bool> is_prime(max + 1, true);
+    is_prime[0] = is_prime[1] = false;
     std::vector<int> init_primes = initial_primes(max, is_prime);
 
     int range_start = static_cast<int>(std::sqrt(max)) + 1;
@@ -95,19 +93,13 @@ int main(int argc, char *argv[]) {
 
 
     std::vector<std::thread> threads;
-
-    
-
-    
-
-
+    std::vector<bool> local_primes(range_length, true);
 
     for (int i = 0; i < num_threads; ++i) {
         int start = range_start + i * chunk_size;
-        int end = (i == num_threads - 1) ? max : start + chunk_size - 1; //edge case for if it is "last" thread
+        int end = (i == num_threads - 1) ? max : start + chunk_size - 1;
 
-
-        threads.emplace_back(thread_primes, start, end, std::cref(init_primes),std::ref(is_prime));
+        threads.emplace_back(thread_primes, start, end, std::cref(init_primes), std::ref(local_primes), range_start);
     }
 
 
@@ -117,13 +109,21 @@ int main(int argc, char *argv[]) {
         t.join();
     }
 
-    auto end_time = std::chrono::high_resolution_clock::now();
+    //we add the local arrays yo bro
+    for (int i = range_start; i <= max; ++i) {
+        is_prime[i] = local_primes[i - range_start];
+    }
+
+
+    auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time, makes sense i think??
+
+
     std::chrono::duration<double> elapsed = end_time - start_time;
     std::cout << "Time: " << elapsed.count() << " seconds" << std::endl;
 
     //for validation
     int n_primes = 0;
-    for (int i=2; i <= max; i++){
+    for (int i=0; i <= max; i++){
         
         if (is_prime[i]) {
             n_primes++;
