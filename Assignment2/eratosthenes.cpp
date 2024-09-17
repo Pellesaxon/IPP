@@ -91,22 +91,25 @@ int main(int argc, char *argv[]) {
     int chunk_size = range_length/ num_threads;
 
 
-    std::vector<std::thread> threads;
+    std::thread *t = new std::thread[num_threads];
+
     std::vector<bool> local_primes(range_length, true);
 
     for (int i = 0; i < num_threads; ++i) {
         int start = range_start + i * chunk_size;
         int end = (i == num_threads - 1) ? max : start + chunk_size - 1;
 
-        threads.emplace_back(thread_primes, start, end, std::cref(init_primes), std::ref(local_primes), range_start);
+        t[i] = std::thread(thread_primes, start, end, std::cref(init_primes), std::ref(local_primes), range_start);
     }
 
 
 
 
-    for (auto &t : threads) {
-        t.join();
+    for (int i=0; i<num_threads; ++i)
+    {
+      t[i].join();
     }
+
 
     //we add the local arrays yo bro
     for (int i = range_start; i <= max; ++i) {
