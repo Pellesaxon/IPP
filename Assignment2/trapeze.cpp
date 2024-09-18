@@ -1,3 +1,6 @@
+// g++ -Wall -std=c++11 -pthread trapeze.cpp -o trapeze
+// chmod +x trap_sc.sh
+
 #include <iostream>
 #include <vector>
 #include <thread>

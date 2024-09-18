@@ -6,7 +6,7 @@ Dynamic_bucket_scaling=(1000 10000 1000000) # How big each bucket of work should
 
 for TR in "${Trapezoid_values[@]}"; do
     for TH in "${Thread_values[@]}"; do
-        for DBS in "${Thread_values[@]}"; do
+        for DBS in "${Dynamic_bucket_scaling[@]}"; do
             echo "Running program with Trapezoids=$TR, Threads=$TH and Bucket_scaling=$DBS"  
             ./dtrapeze $TR $TH $DBS
         done

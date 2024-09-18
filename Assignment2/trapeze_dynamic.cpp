@@ -1,4 +1,5 @@
 // g++ -Wall -std=c++11 -pthread trapeze_dynamic.cpp -o dtrapeze
+// chmod +x trap_dynamic_sc.sh
 
 #include <iostream>
 #include <vector>
