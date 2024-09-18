@@ -1,3 +1,5 @@
+// g++ -Wall -std=c++11 -pthread trapeze_dynamic.cpp -o dtrapeze
+
 #include <iostream>
 #include <vector>
 #include <thread>
@@ -63,28 +65,33 @@ void print_help() {
               << "Options:\n"
               << "  <num_trapezoids>    Number of trapezoids (required)\n"
               << "  <num_threads>       Number of threads (required)\n"
+              << "  <bucket_scaling>    Scaling factor for work bucket size (default = 10000)"
               << "  -h                  Show this help message\n";
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 2 || argc >3) {
+    if (argc < 2 || argc > 4) {
         std::cerr << "Error: Incorrect number of arguments.\n";
         print_help();
         return 1;
     }
     
-    if (std::string(argv[1]) == "-h" || std::string(argv[2]) == "-h") {
+    if (std::string(argv[1]) == "-h" || std::string(argv[2]) == "-h" || std::string(argv[3]) == "-h") {
         print_help();
         return 0;
     }
     
     int num_trapezoids;
     int num_threads;
+    int bucket_scaling = 10000;
 
     try
     {
         num_trapezoids = std::stoi(argv[1]);
         num_threads = std::stoi(argv[2]);
+        if (argc == 4){
+            bucket_scaling = std::stoi(argv[3]);
+        }
     }
     catch (std::exception const&)
     {
@@ -94,8 +101,8 @@ int main(int argc, char *argv[]) {
     }
     
 
-    if (num_threads <= 0 || num_trapezoids <= 0) {
-        std::cerr << "Error: Threads and trapezoids must be positive.\n";
+    if (num_threads <= 0 || num_trapezoids <= 0 || bucket_scaling <= 0) {
+        std::cerr << "Error: Threads, trapezoids and bucket scaling must be positive.\n";
         return 1;
     }
     if (num_threads > 64){
@@ -108,12 +115,9 @@ int main(int argc, char *argv[]) {
     double b = 1.0;  
     double result = 0.0;
 
-    
     std::thread *t = new std::thread[num_threads];
 
-    
-    int dyn_scale = 10000;
-    int nr_of_tickets = (num_trapezoids > 64*dyn_scale) ? (num_trapezoids/dyn_scale) * num_threads : num_trapezoids;
+    int nr_of_tickets = (num_trapezoids > 64*bucket_scaling) ? (num_trapezoids/bucket_scaling) * num_threads : num_trapezoids;
     int counter = 0;
     
     auto start_time = std::chrono::high_resolution_clock::now();
@@ -131,8 +135,8 @@ int main(int argc, char *argv[]) {
     auto end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end_time - start_time;
 
-    std::cout << "Estimated integral: " << result << std::endl;
-    std::cout << "Time: " << elapsed.count() << " seconds" << std::endl;
+    //std::cout << "Estimated integral: " << result << std::endl;
+    std::cout << elapsed.count() << std::endl;
 
     return 0;
 }
