@@ -7,39 +7,33 @@
 #include <string>
 #include <chrono>
 #include <vector>
+#include <algorithm>
+#include <random>
 
 
-std::vector<int> initial_primes(int max, std::vector<bool> &is_prime) { //compute initial primes first up to sqrt(max) (sequentially), because they are used for parallel part
+
+std::vector<int> initial_primes(int max, std::vector<int> &is_prime) { //compute initial primes first up to sqrt(max) (sequentially), because they are used for parallel part
     int limit = static_cast<int>(std::sqrt(max));
     std::vector<int> init_primes;
 
     for (int k = 2; k <= limit; ++k) {
-        if (is_prime[k]) {
+        if (is_prime[k] != 0) {
             init_primes.push_back(k);
             for (int multiple = k * k; multiple <= limit; multiple += k) {
-                is_prime[multiple] = false;
+                is_prime[multiple] = 0;
             }
         }
     }
     return init_primes;
 }
 
-void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<bool>& local_primes, int range_start) { //the threads compute primes on their local vector
+void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<int>& random_is_prime_shit_idk_man, int range_start) { //the threads compute primes on their local vector
 
     for (int p : init_primes) {
 
-        int first_multiple = p * p;
-
-        if (first_multiple < start) {
-        if (start % p == 0) {
-            first_multiple = start;
-        } else {
-            first_multiple = start + (p - (start % p));
-        }
-    }
-
-        for (int multiple = first_multiple; multiple <= end; multiple += p) {
-            local_primes[multiple - range_start] = false;
+        for (int i = start; i <= end; i++) {
+            if (random_is_prime_shit_idk_man[i]%p == 0) 
+                random_is_prime_shit_idk_man[i] = 0;
         }
     }
     return;
@@ -82,38 +76,44 @@ int main(int argc, char *argv[]) {
 
     auto start_time = std::chrono::high_resolution_clock::now(); //start time here??
 
-    std::vector<bool> is_prime(max + 1, true);
-    is_prime[0] = is_prime[1] = false;
-    std::vector<int> init_primes = initial_primes(max, is_prime);
+
+    std::vector<int> random_is_prime_shit_idk_man(max+1);
+    for (int i = 0; i <= max; i++){
+        random_is_prime_shit_idk_man[i] = i;
+    }
+    random_is_prime_shit_idk_man[0] = random_is_prime_shit_idk_man[1] = 0;
+    std::vector<int> init_primes = initial_primes(max, random_is_prime_shit_idk_man);
+    
+    //TODO: Print list to check it is random
 
     int range_start = static_cast<int>(std::sqrt(max)) + 1;
     int range_length = max - range_start + 1;
     int chunk_size = range_length/ num_threads;
+    
 
+    //randomize stuff
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine rng(seed);
+    std::shuffle(&random_is_prime_shit_idk_man[range_start], &random_is_prime_shit_idk_man[max], rng);
 
+    // for (int i =0; i < random_is_prime_shit_idk_man.size(); i++){
+    //     std::cout << "random_is_prime_shit_idk_man " << random_is_prime_shit_idk_man[i] << " " <<std::endl;
+    // }
+
+    //threading
     std::thread *t = new std::thread[num_threads];
-
-    std::vector<bool> local_primes(range_length, true);
 
     for (int i = 0; i < num_threads; ++i) {
         int start = range_start + i * chunk_size;
         int end = (i == num_threads - 1) ? max : start + chunk_size - 1;
 
-        t[i] = std::thread(thread_primes, start, end, std::cref(init_primes), std::ref(local_primes), range_start);
+        t[i] = std::thread(thread_primes, start, end, std::ref(init_primes), std::ref(random_is_prime_shit_idk_man), range_start);
     }
-
-
 
 
     for (int i=0; i<num_threads; ++i)
     {
       t[i].join();
-    }
-
-
-    //we add the local arrays yo bro
-    for (int i = range_start; i <= max; ++i) {
-        is_prime[i] = local_primes[i - range_start];
     }
 
 
@@ -124,14 +124,19 @@ int main(int argc, char *argv[]) {
     std::cout << "Time: " << elapsed.count() << " seconds" << std::endl;
 
     //for validation
+    // for (int i =0; i < init_primes.size(); i++){
+    //     std::cout << "init_primes " << init_primes[i] << " " <<std::endl;
+    // }
+    
     int n_primes = 0;
     for (int i=0; i <= max; i++){
         
-        if (is_prime[i]) {
+        if (random_is_prime_shit_idk_man[i] != 0) {
+            // std::cout << "random_is_prime_shit_idk_man: " << random_is_prime_shit_idk_man[i] << " " <<std::endl;
             n_primes++;
         }
     }
-    std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
+    std::cout << "Number of primes up to (and including) " << max << " is " << n_primes <<std::endl;
 
     return 0;
 }
