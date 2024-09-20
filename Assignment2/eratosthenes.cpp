@@ -24,26 +24,14 @@ std::vector<int> initial_primes(int max, std::vector<bool> &is_prime) { //comput
     return init_primes;
 }
 
-void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<bool>& local_primes, int range_start) { //the threads compute primes on their local vector
-
+void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<bool>& is_primes) { //the threads compute primes on their local vector
     for (int p : init_primes) {
-
-        int first_multiple = p * p;
-
-        if (first_multiple < start) {
-        if (start % p == 0) {
-            first_multiple = start;
-        } else {
-            first_multiple = start + (p - (start % p));
-        }
-    }
-
-        for (int multiple = first_multiple; multiple <= end; multiple += p) {
-            local_primes[multiple - range_start] = false;
+        for (int i = start; i <= end; i++) {
+            if (i%p == 0) 
+                is_primes[i] = false;
         }
     }
     return;
-    
 }
 
 void print_help() {
@@ -60,14 +48,12 @@ int main(int argc, char *argv[]) {
         print_help();
         return 1;
     }
-
     
     if (std::string(argv[1]) == "-h" || std::string(argv[2]) == "-h") {
         print_help();
         return 0;
     }
     
-
     int max = std::stoi(argv[1]);
     int num_threads = std::stoi(argv[2]);
 
@@ -93,32 +79,19 @@ int main(int argc, char *argv[]) {
 
     std::thread *t = new std::thread[num_threads];
 
-    std::vector<bool> local_primes(range_length, true);
-
     for (int i = 0; i < num_threads; ++i) {
         int start = range_start + i * chunk_size;
         int end = (i == num_threads - 1) ? max : start + chunk_size - 1;
 
-        t[i] = std::thread(thread_primes, start, end, std::cref(init_primes), std::ref(local_primes), range_start);
+        t[i] = std::thread(thread_primes, start, end, std::cref(init_primes), std::ref(is_prime));
     }
-
-
-
 
     for (int i=0; i<num_threads; ++i)
     {
       t[i].join();
     }
 
-
-    //we add the local arrays yo bro
-    for (int i = range_start; i <= max; ++i) {
-        is_prime[i] = local_primes[i - range_start];
-    }
-
-
     auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time, makes sense i think??
-
 
     std::chrono::duration<double> elapsed = end_time - start_time;
     std::cout << "Time: " << elapsed.count() << " seconds" << std::endl;

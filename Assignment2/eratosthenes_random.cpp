@@ -11,7 +11,7 @@
 #include <random>
 
 //g++ -Wall -std=c++11 -pthread eratosthenes.cpp -o eratosthenes
-//g++ -Wall -std=c++11 -pthread eratosthenes_random.cpp -o eratosthenes
+//g++ -Wall -std=c++11 -pthread eratosthenes_random.cpp -o eratosthenes_random
 //chmod +x eratosthenes_sc.sh
 
 std::vector<int> initial_primes(int max, std::vector<int> &is_prime) { //compute initial primes first up to sqrt(max) (sequentially), because they are used for parallel part
@@ -29,7 +29,7 @@ std::vector<int> initial_primes(int max, std::vector<int> &is_prime) { //compute
     return init_primes;
 }
 
-void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<int>& random_is_prime_shit_idk_man, int range_start) { //the threads compute primes on their local vector
+void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<int>& random_is_prime_shit_idk_man) { //the threads compute primes on their local vector
 
     for (int p : init_primes) {
 
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
         int start = range_start + i * chunk_size;
         int end = (i == num_threads - 1) ? max : start + chunk_size - 1;
 
-        t[i] = std::thread(thread_primes, start, end, std::ref(init_primes), std::ref(random_is_prime_shit_idk_man), range_start);
+        t[i] = std::thread(thread_primes, start, end, std::ref(init_primes), std::ref(random_is_prime_shit_idk_man));
     }
 
 
