@@ -10,7 +10,9 @@
 #include <algorithm>
 #include <random>
 
-
+//g++ -Wall -std=c++11 -pthread eratosthenes.cpp -o eratosthenes
+//g++ -Wall -std=c++11 -pthread eratosthenes_random.cpp -o eratosthenes
+//chmod +x eratosthenes_sc.sh
 
 std::vector<int> initial_primes(int max, std::vector<int> &is_prime) { //compute initial primes first up to sqrt(max) (sequentially), because they are used for parallel part
     int limit = static_cast<int>(std::sqrt(max));
