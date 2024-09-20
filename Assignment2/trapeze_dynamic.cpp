@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
 
     std::thread *t = new std::thread[num_threads];
 
-    int nr_of_tickets = (num_trapezoids > 64*bucket_scaling) ? (num_trapezoids/bucket_scaling) * num_threads : num_trapezoids;
+    int nr_of_tickets = (num_trapezoids > 64*bucket_scaling) ? (num_trapezoids/bucket_scaling) * num_threads : num_threads;
     int counter = 0;
     
     auto start_time = std::chrono::high_resolution_clock::now();
