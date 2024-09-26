@@ -1,5 +1,5 @@
-#ifndef lacpp_sorted_list_coarse_mutex_hpp
-#define lacpp_sorted_list_coarse_mutex_hpp lacpp_sorted_list_coarse_mutex_hpp
+#ifndef lacpp_sorted_list_fine_mutex_hpp
+#define lacpp_sorted_list_fine_mutex_hpp lacpp_sorted_list_fine_mutex_hpp
 #include <mutex>
 
 /* a sorted list implementation by David Klaftenegger, 2015
@@ -7,20 +7,19 @@
  */
 
 
-
 /* non-concurrent sorted singly-linked list */
 template<typename T>
-class sorted_list_coarse_mutex {
+class sorted_list_fine_mutex {
 	/* struct for list nodes */
 	private:
 		struct node {
+			std::mutex node_mutex;
 			T value;
 			node* next;
 		};
 
 
 	node* first = nullptr;
-	std::mutex sorted_list_mutex;
 
 	public:
 		/* default implementations:
@@ -33,23 +32,31 @@ class sorted_list_coarse_mutex {
 		 * The first is required due to the others,
 		 * which are explicitly listed due to the rule of five.
 		 */
-		sorted_list_coarse_mutex() = default;
-		sorted_list_coarse_mutex(const sorted_list_coarse_mutex<T>& other) = default;
-		sorted_list_coarse_mutex(sorted_list_coarse_mutex<T>&& other) = default;
-		sorted_list_coarse_mutex<T>& operator=(const sorted_list_coarse_mutex<T>& other) = default;
-		sorted_list_coarse_mutex<T>& operator=(sorted_list_coarse_mutex<T>&& other) = default;
-		~sorted_list_coarse_mutex() {
+		sorted_list_fine_mutex() = default;
+		sorted_list_fine_mutex(const sorted_list_fine_mutex<T>& other) = default;
+		sorted_list_fine_mutex(sorted_list_fine_mutex<T>&& other) = default;
+		sorted_list_fine_mutex<T>& operator=(const sorted_list_fine_mutex<T>& other) = default;
+		sorted_list_fine_mutex<T>& operator=(sorted_list_fine_mutex<T>&& other) = default;
+		~sorted_list_fine_mutex() {
 			while(first != nullptr) {
 				remove(first->value);
 			}
 		}
 		/* insert v into the list */
 		void insert(T v) {
-			sorted_list_mutex.lock();
 			/* first find position */
+			
 			node* pred = nullptr;
 			node* succ = first;
-			while(succ != nullptr && succ->value < v) {
+			while(succ != nullptr){
+				succ->node_mutex.lock();
+
+				if  (succ->value < v){
+					break;
+				}
+				if (pred != nullptr){
+					pred->node_mutex.unlock();
+				}
 				pred = succ;
 				succ = succ->next;
 			}
@@ -60,16 +67,19 @@ class sorted_list_coarse_mutex {
 
 			/* insert new node between pred and succ */
 			current->next = succ;
+			if (succ != nullptr){
+				succ->node_mutex.unlock();
+			}
+
 			if(pred == nullptr) {
 				first = current;
 			} else {
 				pred->next = current;
+				pred->node_mutex.unlock();
 			}
-			sorted_list_mutex.unlock();
 		}
 
 		void remove(T v) {
-			sorted_list_mutex.lock();
 			/* first find position */
 			node* pred = nullptr;
 			node* current = first;
@@ -79,7 +89,6 @@ class sorted_list_coarse_mutex {
 			}
 			if(current == nullptr || current->value != v) {
 				/* v not found */
-				sorted_list_mutex.unlock();
 				return;
 			}
 			/* remove current */
@@ -89,12 +98,10 @@ class sorted_list_coarse_mutex {
 				pred->next = current->next;
 			}
 			delete current;
-			sorted_list_mutex.unlock();
 		}
 
 		/* count elements with value v in the list */
 		std::size_t count(T v) {
-			sorted_list_mutex.lock();
 			std::size_t cnt = 0;
 			/* first go to value v */
 			node* current = first;
@@ -106,7 +113,6 @@ class sorted_list_coarse_mutex {
 				cnt++;
 				current = current->next;
 			}
-			sorted_list_mutex.unlock();
 			return cnt;
 		}
 };

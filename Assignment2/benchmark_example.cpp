@@ -6,6 +6,7 @@
 
 #include "benchmark.hpp"
 #include "sorted_list_coarse_mutex.hpp"
+#include "sorted_list_fine_mutex.hpp"
 
 static const int DATA_VALUE_RANGE_MIN = 0;
 static const int DATA_VALUE_RANGE_MAX = 256;
@@ -58,17 +59,17 @@ int main(int argc, char* argv[]) {
 	std::mt19937 engine(rd());
 	std::uniform_int_distribution<int> uniform_dist(DATA_VALUE_RANGE_MIN, DATA_VALUE_RANGE_MAX);
 
-	/* example use of benchmarking */
+	/* Benchmarking coarse mutex*/
 	{
 		sorted_list_coarse_mutex<int> l1;
 		/* prefill list with 1024 elements */
 		for(int i = 0; i < DATA_PREFILL; i++) {
 			l1.insert(uniform_dist(engine));
 		}
-		benchmark(threadcnt, u8"non-thread-safe read", [&l1](int random){
+		benchmark(threadcnt, u8"coarse_mutex read", [&l1](int random){
 			read(l1, random);
 		});
-		benchmark(threadcnt, u8"non-thread-safe update", [&l1](int random){
+		benchmark(threadcnt, u8"coarse_mutex update", [&l1](int random){
 			update(l1, random);
 		});
 	}
@@ -79,9 +80,36 @@ int main(int argc, char* argv[]) {
 		for(int i = 0; i < DATA_PREFILL; i++) {
 			l1.insert(uniform_dist(engine));
 		}
-		benchmark(threadcnt, u8"non-thread-safe mixed", [&l1](int random){
+		benchmark(threadcnt, u8"coarse_mutex mixed", [&l1](int random){
 			mixed(l1, random);
 		});
 	}
+
+	/* Benchmarking fine mutex*/
+	{
+		sorted_list_fine_mutex<int> l2;
+		/* prefill list with 1024 elements */
+		for(int i = 0; i < DATA_PREFILL; i++) {
+			l2.insert(uniform_dist(engine));
+		}
+		benchmark(threadcnt, u8"fine-mutex read", [&l2](int random){
+			read(l2, random);
+		});
+		benchmark(threadcnt, u8"fine-mutex update", [&l2](int random){
+			update(l2, random);
+		});
+	}
+	{
+		/* start with fresh list: update test left list in random size */
+		sorted_list_coarse_mutex<int> l2;
+		/* prefill list with 1024 elements */
+		for(int i = 0; i < DATA_PREFILL; i++) {
+			l2.insert(uniform_dist(engine));
+		}
+		benchmark(threadcnt, u8"fine-mutex mixed", [&l2](int random){
+			mixed(l2, random);
+		});
+	}
+
 	return EXIT_SUCCESS;
 }
