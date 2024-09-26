@@ -34,4 +34,4 @@
 
 # Other
 *.json
-*.vscode
+*.vscode*
