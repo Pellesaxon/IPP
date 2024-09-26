@@ -83,19 +83,39 @@ class sorted_list_fine_mutex {
 			/* first find position */
 			node* pred = nullptr;
 			node* current = first;
-			while(current != nullptr && current->value < v) {
+			
+
+			while(current != nullptr){
+				current->node_mutex.lock();
+
+				if  (current->value < v){
+					break;
+				}
+				if (pred != nullptr){
+					pred->node_mutex.unlock();
+				}
 				pred = current;
 				current = current->next;
 			}
+
 			if(current == nullptr || current->value != v) {
 				/* v not found */
+				if (pred != nullptr){
+					pred->node_mutex.unlock();
+				}
+				if (current != nullptr){
+					current->node_mutex.unlock();
+				}
 				return;
 			}
+
 			/* remove current */
 			if(pred == nullptr) {
 				first = current->next;
+				/* We dont need to unlock as lock is deleted with current*/
 			} else {
 				pred->next = current->next;
+				pred->node_mutex.unlock();
 			}
 			delete current;
 		}
@@ -105,14 +125,33 @@ class sorted_list_fine_mutex {
 			std::size_t cnt = 0;
 			/* first go to value v */
 			node* current = first;
-			while(current != nullptr && current->value < v) {
-				current = current->next;
+			node* new_current;
+			
+			while(current != nullptr){
+				current->node_mutex.lock();
+				
+				if  (current->value < v){
+					break;
+				}
+				new_current = current->next;
+				current->node_mutex.unlock();
+				current = new_current;
 			}
+			
 			/* count elements */
 			while(current != nullptr && current->value == v) {
 				cnt++;
-				current = current->next;
+				new_current = current->next;
+				if (new_current != nullptr){
+					new_current->node_mutex.lock();
+				}
+
+				current->node_mutex.unlock();
+				current = new_current;
 			}
+			if (current != nullptr){
+					current->node_mutex.unlock();
+				}
 			return cnt;
 		}
 };
