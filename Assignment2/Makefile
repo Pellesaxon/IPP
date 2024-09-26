@@ -1,4 +1,4 @@
-C++flags = g++ -std=c++11 -Wall -pthread
+C++flags = g++ -std=c++11 -Wall -pthread -g
 
 #g++ -Wall -std=c++11 -pthread eratosthenes.cpp -o eratosthenes
 #g++ -Wall -std=c++11 -pthread eratosthenes_random.cpp -o eratosthenes_random
@@ -25,14 +25,20 @@ run_dtrapeze: dtrapeze.exe
 	./trap_dynamic_sc.sh
 
 eratosthenes.exe:
-	g++ -Wall -std=c++11 -pthread eratosthenes.cpp -o eratosthenes
+	$(C++flags) eratosthenes.cpp -o eratosthenes
 
 eratosthenes_random.exe:
-	g++ -Wall -std=c++11 -pthread eratosthenes_random.cpp -o eratosthenes_random
+	$(C++flags) eratosthenes_random.cpp -o eratosthenes_random
 
 run_eratosthenes: eratosthenes.exe eratosthenes_random.exe
 	chmod +x eratosthenes_sc.sh
 	./eratosthenes_sc.sh
+
+bench.exe:
+	$(C++flags) benchmark_example.cpp -o bench
+
+run_bench: bench.exe
+	./bench.exe 4
 
 clean:
 	$(RM) *.exe
