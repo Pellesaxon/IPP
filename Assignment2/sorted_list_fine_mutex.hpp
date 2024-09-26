@@ -51,7 +51,7 @@ class sorted_list_fine_mutex {
 			while(succ != nullptr){
 				succ->node_mutex.lock();
 
-				if  (succ->value < v){
+				if  (succ->value > v){
 					break;
 				}
 				if (pred != nullptr){
@@ -88,7 +88,7 @@ class sorted_list_fine_mutex {
 			while(current != nullptr){
 				current->node_mutex.lock();
 
-				if  (current->value < v){
+				if  (current->value > v){
 					break;
 				}
 				if (pred != nullptr){
@@ -113,6 +113,7 @@ class sorted_list_fine_mutex {
 			if(pred == nullptr) {
 				first = current->next;
 				/* We dont need to unlock as lock is deleted with current*/
+				current->node_mutex.unlock();
 			} else {
 				pred->next = current->next;
 				pred->node_mutex.unlock();
@@ -130,7 +131,7 @@ class sorted_list_fine_mutex {
 			while(current != nullptr){
 				current->node_mutex.lock();
 				
-				if  (current->value < v){
+				if  (current->value > v){
 					break;
 				}
 				new_current = current->next;

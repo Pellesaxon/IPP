@@ -60,30 +60,30 @@ int main(int argc, char* argv[]) {
 	std::uniform_int_distribution<int> uniform_dist(DATA_VALUE_RANGE_MIN, DATA_VALUE_RANGE_MAX);
 
 	/* Benchmarking coarse mutex*/
-	{
-		sorted_list_coarse_mutex<int> l1;
-		/* prefill list with 1024 elements */
-		for(int i = 0; i < DATA_PREFILL; i++) {
-			l1.insert(uniform_dist(engine));
-		}
-		benchmark(threadcnt, u8"coarse_mutex read", [&l1](int random){
-			read(l1, random);
-		});
-		benchmark(threadcnt, u8"coarse_mutex update", [&l1](int random){
-			update(l1, random);
-		});
-	}
-	{
-		/* start with fresh list: update test left list in random size */
-		sorted_list_coarse_mutex<int> l1;
-		/* prefill list with 1024 elements */
-		for(int i = 0; i < DATA_PREFILL; i++) {
-			l1.insert(uniform_dist(engine));
-		}
-		benchmark(threadcnt, u8"coarse_mutex mixed", [&l1](int random){
-			mixed(l1, random);
-		});
-	}
+	// {
+	// 	sorted_list_coarse_mutex<int> l1;
+	// 	/* prefill list with 1024 elements */
+	// 	for(int i = 0; i < DATA_PREFILL; i++) {
+	// 		l1.insert(uniform_dist(engine));
+	// 	}
+	// 	benchmark(threadcnt, u8"coarse_mutex read", [&l1](int random){
+	// 		read(l1, random);
+	// 	});
+	// 	benchmark(threadcnt, u8"coarse_mutex update", [&l1](int random){
+	// 		update(l1, random);
+	// 	});
+	// }
+	// {
+	// 	/* start with fresh list: update test left list in random size */
+	// 	sorted_list_coarse_mutex<int> l1;
+	// 	/* prefill list with 1024 elements */
+	// 	for(int i = 0; i < DATA_PREFILL; i++) {
+	// 		l1.insert(uniform_dist(engine));
+	// 	}
+	// 	benchmark(threadcnt, u8"coarse_mutex mixed", [&l1](int random){
+	// 		mixed(l1, random);
+	// 	});
+	// }
 
 	/* Benchmarking fine mutex*/
 	{
@@ -101,13 +101,13 @@ int main(int argc, char* argv[]) {
 	}
 	{
 		/* start with fresh list: update test left list in random size */
-		sorted_list_coarse_mutex<int> l2;
+		sorted_list_fine_mutex<int> l3;
 		/* prefill list with 1024 elements */
 		for(int i = 0; i < DATA_PREFILL; i++) {
-			l2.insert(uniform_dist(engine));
+			l3.insert(uniform_dist(engine));
 		}
-		benchmark(threadcnt, u8"fine-mutex mixed", [&l2](int random){
-			mixed(l2, random);
+		benchmark(threadcnt, u8"fine-mutex mixed", [&l3](int random){
+			mixed(l3, random);
 		});
 	}
 
