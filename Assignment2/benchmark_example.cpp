@@ -5,7 +5,7 @@
 #include <string>
 
 #include "benchmark.hpp"
-#include "sorted_list.hpp"
+#include "sorted_list_coarse_mutex.hpp"
 
 static const int DATA_VALUE_RANGE_MIN = 0;
 static const int DATA_VALUE_RANGE_MAX = 256;
@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
 
 	/* example use of benchmarking */
 	{
-		sorted_list<int> l1;
+		sorted_list_coarse_mutex<int> l1;
 		/* prefill list with 1024 elements */
 		for(int i = 0; i < DATA_PREFILL; i++) {
 			l1.insert(uniform_dist(engine));
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
 	}
 	{
 		/* start with fresh list: update test left list in random size */
-		sorted_list<int> l1;
+		sorted_list_coarse_mutex<int> l1;
 		/* prefill list with 1024 elements */
 		for(int i = 0; i < DATA_PREFILL; i++) {
 			l1.insert(uniform_dist(engine));
