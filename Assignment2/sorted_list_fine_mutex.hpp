@@ -13,13 +13,16 @@ class sorted_list_fine_mutex {
 	/* struct for list nodes */
 	private:
 		struct node {
-			std::mutex node_mutex;
 			T value;
 			node* next;
+			std::mutex node_mutex;
 		};
 
 
 	node* first = nullptr;
+	// std::mutex insert_lock;
+    // std::mutex remove_lock;
+    // std::mutex count_lock;
 
 	public:
 		/* default implementations:
@@ -45,7 +48,7 @@ class sorted_list_fine_mutex {
 		/* insert v into the list */
 		void insert(T v) {
 			/* first find position */
-			
+			// insert_lock.lock();
 			node* pred = nullptr;
 			node* succ = first;
 			while(succ != nullptr){
@@ -77,10 +80,12 @@ class sorted_list_fine_mutex {
 				pred->next = current;
 				pred->node_mutex.unlock();
 			}
+			// insert_lock.unlock();
 		}
 
 		void remove(T v) {
 			/* first find position */
+			// remove_lock.lock();
 			node* pred = nullptr;
 			node* current = first;
 			
@@ -100,12 +105,13 @@ class sorted_list_fine_mutex {
 
 			if(current == nullptr || current->value != v) {
 				/* v not found */
-				if (pred != nullptr){
-					pred->node_mutex.unlock();
-				}
 				if (current != nullptr){
 					current->node_mutex.unlock();
 				}
+				if (pred != nullptr){
+					pred->node_mutex.unlock();
+				}
+				// remove_lock.unlock();
 				return;
 			}
 
@@ -113,16 +119,18 @@ class sorted_list_fine_mutex {
 			if(pred == nullptr) {
 				first = current->next;
 				/* We dont need to unlock as lock is deleted with current*/
-				current->node_mutex.unlock();
 			} else {
 				pred->next = current->next;
-				pred->node_mutex.unlock();
 			}
+			current->node_mutex.unlock();
+			pred->node_mutex.unlock();
 			delete current;
+			// remove_lock.unlock();
 		}
 
 		/* count elements with value v in the list */
 		std::size_t count(T v) {
+			//count_lock.lock();
 			std::size_t cnt = 0;
 			/* first go to value v */
 			node* current = first;
@@ -153,6 +161,7 @@ class sorted_list_fine_mutex {
 			if (current != nullptr){
 					current->node_mutex.unlock();
 				}
+			//count_lock.unlock();
 			return cnt;
 		}
 };
