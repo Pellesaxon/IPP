@@ -1,6 +1,6 @@
-#ifndef lacpp_sorted_list_fine_TATAS_hpp
-#define lacpp_sorted_list_fine_TATAS_hpp lacpp_sorted_list_fine_TATAS_hpp
-#include <mutex>
+#ifndef lacpp_sorted_list_fine_CLH_hpp
+#define lacpp_sorted_list_fine_CLH_hpp lacpp_sorted_list_fine_CLH_hpp
+#include <atomic>
 
 /* a sorted list implementation by David Klaftenegger, 2015
  * please report bugs or suggest improvements to david.klaftenegger@it.uu.se
@@ -9,32 +9,35 @@
 
 /* non-concurrent sorted singly-linked list */
 template<typename T>
-class sorted_list_fine_TATAS {
+class sorted_list_fine_CLH {
 	/* struct for list nodes */
 	private:
 
-		/* Based on proposed structure from lecture*/
-		class TATASlock {
-			std::atomic_bool ready {false};
-			public: bool get() {
-				return ready.load();
-			}
+		/* Based on proposed structure from lecture as well as the course book*/
+		class CLHlock {
+			struct Qnode{
+				std::atomic_bool locked {true};
+			};
+			std::atomic_ref<Qnode> tail = &Qnode();
+			
+			thread_local static Qnode my_node;
+			thread_local static Qnode* my_pred;
+			
 			public: void lock() {
-				while (true){
-					while (get()) {}
-					if (!ready.exchange(true))
-					return;
-				}
+				my_node = Qnode();
+				my_pred = &tail.exchange(my_node);
+				while(my_pred.locked.load()){}
 			}
 			public: void unlock() {
-				ready.store(false);
+				my_node.locked.store(false);
+				my_node = my_pred;
 			}
 		};
 
 		struct node {
 			T value;
 			node* next;
-			TATASlock node_lock;
+			CLHlock node_lock;
 		};
 		
 	node* first = nullptr;
@@ -50,12 +53,12 @@ class sorted_list_fine_TATAS {
 		 * The first is required due to the others,
 		 * which are explicitly listed due to the rule of five.
 		 */
-		sorted_list_fine_TATAS() = default;
-		sorted_list_fine_TATAS(const sorted_list_fine_TATAS<T>& other) = default;
-		sorted_list_fine_TATAS(sorted_list_fine_TATAS<T>&& other) = default;
-		sorted_list_fine_TATAS<T>& operator=(const sorted_list_fine_TATAS<T>& other) = default;
-		sorted_list_fine_TATAS<T>& operator=(sorted_list_fine_TATAS<T>&& other) = default;
-		~sorted_list_fine_TATAS() {
+		sorted_list_fine_CLH() = default;
+		sorted_list_fine_CLH(const sorted_list_fine_CLH<T>& other) = default;
+		sorted_list_fine_CLH(sorted_list_fine_CLH<T>&& other) = default;
+		sorted_list_fine_CLH<T>& operator=(const sorted_list_fine_CLH<T>& other) = default;
+		sorted_list_fine_CLH<T>& operator=(sorted_list_fine_CLH<T>&& other) = default;
+		~sorted_list_fine_CLH() {
 			while(first != nullptr) {
 				remove(first->value);
 			}

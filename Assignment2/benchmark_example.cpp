@@ -9,6 +9,7 @@
 #include "sorted_list_fine_mutex.hpp"
 #include "sorted_list_coarse_TATAS.hpp"
 #include "sorted_list_fine_TATAS.hpp"
+#include "sorted_list_fine_CLH.hpp"
 
 static const int DATA_VALUE_RANGE_MIN = 0;
 static const int DATA_VALUE_RANGE_MAX = 256;
@@ -47,13 +48,13 @@ void mixed(List& l, int random) {
 int main(int argc, char* argv[]) {
 	/* get number of threads from command line */
 	if(argc < 2) {
-		std::cerr << u8"Please specify number of worker threads: " << argv[0] << u8" <number>\n";
+		std::cerr << "Please specify number of worker threads: " << argv[0] << " <number>\n";
 		std::exit(EXIT_FAILURE);
 	}
 	std::istringstream ss(argv[1]);
 	int threadcnt;
 	if (!(ss >> threadcnt)) {
-		std::cerr << u8"Invalid number of threads '" << argv[1] << u8"'\n";
+		std::cerr << "Invalid number of threads '" << argv[1] << "'\n";
 		std::exit(EXIT_FAILURE);
 	}
 	/* set up random number generator */
@@ -67,10 +68,10 @@ int main(int argc, char* argv[]) {
 	for(int i = 0; i < DATA_PREFILL; i++) {
 		l1.insert(uniform_dist(engine));
 	}
-	benchmark(threadcnt, u8"coarse_mutex read", [&l1](int random){
+	benchmark(threadcnt, "coarse_mutex read", [&l1](int random){
 		read(l1, random);
 	});
-	benchmark(threadcnt, u8"coarse_mutex update", [&l1](int random){
+	benchmark(threadcnt, "coarse_mutex update", [&l1](int random){
 		update(l1, random);
 	});
 	/* start with fresh list: update test left list in random size */
@@ -79,7 +80,7 @@ int main(int argc, char* argv[]) {
 	for(int i = 0; i < DATA_PREFILL; i++) {
 		l2.insert(uniform_dist(engine));
 	}
-	benchmark(threadcnt, u8"coarse_mutex mixed", [&l2](int random){
+	benchmark(threadcnt, "coarse_mutex mixed", [&l2](int random){
 		mixed(l2, random);
 	});
 
@@ -90,10 +91,10 @@ int main(int argc, char* argv[]) {
 	for(int i = 0; i < DATA_PREFILL; i++) {
 		l3.insert(uniform_dist(engine));
 	}
-	benchmark(threadcnt, u8"fine-mutex read", [&l3](int random){
+	benchmark(threadcnt, "fine-mutex read", [&l3](int random){
 		read(l3, random);
 	});
-	benchmark(threadcnt, u8"fine-mutex update", [&l3](int random){
+	benchmark(threadcnt, "fine-mutex update", [&l3](int random){
 		update(l3, random);
 	});
 
@@ -104,9 +105,10 @@ int main(int argc, char* argv[]) {
 		l4.insert(uniform_dist(engine));
 	}
 
-	benchmark(threadcnt, u8"fine-mutex mixed", [&l4](int random){
+	benchmark(threadcnt, "fine-mutex mixed", [&l4](int random){
 		mixed(l4, random);
 	});
+	//This shouldn't be needed but theory is that some references to something somewhere in the code doesn't decrease to 0 and it therefore never quits
 	l3 = sorted_list_fine_mutex<int>();
 	l4 = sorted_list_fine_mutex<int>();
 
@@ -116,10 +118,10 @@ int main(int argc, char* argv[]) {
 	for(int i = 0; i < DATA_PREFILL; i++) {
 		l5.insert(uniform_dist(engine));
 	}
-	benchmark(threadcnt, u8"coarse_TATAS read", [&l5](int random){
+	benchmark(threadcnt, "coarse_TATAS read", [&l5](int random){
 		read(l5, random);
 	});
-	benchmark(threadcnt, u8"coarse_TATAS update", [&l5](int random){
+	benchmark(threadcnt, "coarse_TATAS update", [&l5](int random){
 		update(l5, random);
 	});
 
@@ -129,7 +131,7 @@ int main(int argc, char* argv[]) {
 	for(int i = 0; i < DATA_PREFILL; i++) {
 		l6.insert(uniform_dist(engine));
 	}
-	benchmark(threadcnt, u8"coarse_TATAS mixed", [&l6](int random){
+	benchmark(threadcnt, "coarse_TATAS mixed", [&l6](int random){
 		mixed(l6, random);
 	});
 
@@ -139,10 +141,10 @@ int main(int argc, char* argv[]) {
 	for(int i = 0; i < DATA_PREFILL; i++) {
 		l7.insert(uniform_dist(engine));
 	}
-	benchmark(threadcnt, u8"fine_TATAS read", [&l7](int random){
+	benchmark(threadcnt, "fine_TATAS read", [&l7](int random){
 		read(l7, random);
 	});
-	benchmark(threadcnt, u8"fine_TATAS update", [&l7](int random){
+	benchmark(threadcnt, "fine_TATAS update", [&l7](int random){
 		update(l7, random);
 	});
 
@@ -152,11 +154,39 @@ int main(int argc, char* argv[]) {
 	for(int i = 0; i < DATA_PREFILL; i++) {
 		l8.insert(uniform_dist(engine));
 	}
-	benchmark(threadcnt, u8"fine_TATAS mixed", [&l8](int random){
+	benchmark(threadcnt, "fine_TATAS mixed", [&l8](int random){
 		mixed(l8, random);
 	});
+
+	/* Benchmarking fine mutex*/
+	sorted_list_fine_CLH<int> l9;
+	/* prefill list with 1024 elements */
+	for(int i = 0; i < DATA_PREFILL; i++) {
+		l9.insert(uniform_dist(engine));
+	}
+	benchmark(threadcnt, "fine_CLH read", [&l9](int random){
+		read(l9, random);
+	});
+	benchmark(threadcnt, "fine_CLH update", [&l9](int random){
+		update(l9, random);
+	});
+
+	/* start with fresh list: update test left list in random size */
+	sorted_list_fine_CLH<int> l10;
+	/* prefill list with 1024 elements */
+	for(int i = 0; i < DATA_PREFILL; i++) {
+		l10.insert(uniform_dist(engine));
+	}
+	benchmark(threadcnt, "fine_CLH mixed", [&l10](int random){
+		mixed(l10, random);
+	});
+	
+
+	//This shouldn't be needed but theory is that some references to something somewhere in the code doesn't decrease to 0 and it therefore never quits
 	l7 = sorted_list_fine_TATAS<int>();
 	l8 = sorted_list_fine_TATAS<int>();
+	l9 = sorted_list_fine_CLH<int>();
+	l10 = sorted_list_fine_CLH<int>();
 	std::cout<<"Done";
 
 	return EXIT_SUCCESS;

@@ -35,7 +35,7 @@ run_eratosthenes: eratosthenes.exe eratosthenes_random.exe
 	./eratosthenes_sc.sh
 
 bench.exe:
-	$(C++flags) benchmark_example.cpp -o bench
+	g++ -std=c++20 -Wall -pthread -g benchmark_example.cpp -o bench
 
 run_bench: bench.exe
 	./bench.exe 4

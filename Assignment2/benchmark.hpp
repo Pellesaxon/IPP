@@ -76,7 +76,7 @@ void benchmark(int threadcnt, std::string identifier, Function fun) {
 	for(auto& v : ops_per_second) {
 		result += v;
 	}
-	std::cout << identifier << u8" / threads: " << threadcnt << u8" - thousands of operations per second: " << std::fixed << result << "\n";
+	std::cout << identifier << " / threads: " << threadcnt << " - thousands of operations per second: " << std::fixed << result << "\n";
 }
 
 #endif // lacpp_benchmark_hpp

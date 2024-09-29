@@ -28,7 +28,7 @@ class sorted_list_coarse_TATAS {
 				while (true){
 					while (get()) {}
 					if (!ready.exchange(true))
-						return;
+					return;
 				}
 			}
 			public: void unlock() {
@@ -38,7 +38,7 @@ class sorted_list_coarse_TATAS {
 
 
 	node* first = nullptr;
-	TATASlock tataslock;
+	TATASlock node_lock;
 
 
 	public:
@@ -64,7 +64,7 @@ class sorted_list_coarse_TATAS {
 		}
 		/* insert v into the list */
 		void insert(T v) {
-			tataslock.lock();
+			node_lock.lock();
 			/* first find position */
 			node* pred = nullptr;
 			node* succ = first;
@@ -84,11 +84,11 @@ class sorted_list_coarse_TATAS {
 			} else {
 				pred->next = current;
 			}
-			tataslock.unlock();
+			node_lock.unlock();
 		}
 
 		void remove(T v) {
-			tataslock.lock();
+			node_lock.lock();
 			/* first find position */
 			node* pred = nullptr;
 			node* current = first;
@@ -98,7 +98,7 @@ class sorted_list_coarse_TATAS {
 			}
 			if(current == nullptr || current->value != v) {
 				/* v not found */
-				tataslock.unlock();
+				node_lock.unlock();
 				return;
 			}
 			/* remove current */
@@ -108,12 +108,12 @@ class sorted_list_coarse_TATAS {
 				pred->next = current->next;
 			}
 			delete current;
-			tataslock.unlock();
+			node_lock.unlock();
 		}
 
 		/* count elements with value v in the list */
 		std::size_t count(T v) {
-			tataslock.lock();
+			node_lock.lock();
 			std::size_t cnt = 0;
 			/* first go to value v */
 			node* current = first;
@@ -125,7 +125,7 @@ class sorted_list_coarse_TATAS {
 				cnt++;
 				current = current->next;
 			}
-			tataslock.unlock();
+			node_lock.unlock();
 			return cnt;
 		}
 };
