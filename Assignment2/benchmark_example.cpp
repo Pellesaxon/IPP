@@ -7,6 +7,8 @@
 #include "benchmark.hpp"
 #include "sorted_list_coarse_mutex.hpp"
 #include "sorted_list_fine_mutex.hpp"
+#include "sorted_list_coarse_TATAS.hpp"
+#include "sorted_list_fine_TATAS.hpp"
 
 static const int DATA_VALUE_RANGE_MIN = 0;
 static const int DATA_VALUE_RANGE_MAX = 256;
@@ -105,29 +107,56 @@ int main(int argc, char* argv[]) {
 	benchmark(threadcnt, u8"fine-mutex mixed", [&l4](int random){
 		mixed(l4, random);
 	});
+	l3 = sorted_list_fine_mutex<int>();
+	l4 = sorted_list_fine_mutex<int>();
 
-	// /* Benchmarking fine mutex*/
-	// sorted_list_fine_mutex<int> l5;
-	// /* prefill list with 1024 elements */
-	// for(int i = 0; i < DATA_PREFILL; i++) {
-	// 	l5.insert(uniform_dist(engine));
-	// }
-	// benchmark(threadcnt, u8"fine-mutex read", [&l5](int random){
-	// 	read(l5, random);
-	// });
-	// benchmark(threadcnt, u8"fine-mutex update", [&l5](int random){
-	// 	update(l5, random);
-	// });
+	/* Benchmarking course TATAS*/
+	sorted_list_coarse_TATAS<int> l5;
+	/* prefill list with 1024 elements */
+	for(int i = 0; i < DATA_PREFILL; i++) {
+		l5.insert(uniform_dist(engine));
+	}
+	benchmark(threadcnt, u8"coarse_TATAS read", [&l5](int random){
+		read(l5, random);
+	});
+	benchmark(threadcnt, u8"coarse_TATAS update", [&l5](int random){
+		update(l5, random);
+	});
 
-	// /* start with fresh list: update test left list in random size */
-	// sorted_list_fine_mutex<int> l6;
-	// /* prefill list with 1024 elements */
-	// for(int i = 0; i < DATA_PREFILL; i++) {
-	// 	l6.insert(uniform_dist(engine));
-	// }
-	// benchmark(threadcnt, u8"fine-mutex mixed", [&l6](int random){
-	// 	mixed(l6, random);
-	// });
+	/* start with fresh list: update test left list in random size */
+	sorted_list_coarse_TATAS<int> l6;
+	/* prefill list with 1024 elements */
+	for(int i = 0; i < DATA_PREFILL; i++) {
+		l6.insert(uniform_dist(engine));
+	}
+	benchmark(threadcnt, u8"coarse_TATAS mixed", [&l6](int random){
+		mixed(l6, random);
+	});
+
+	/* Benchmarking fine mutex*/
+	sorted_list_fine_TATAS<int> l7;
+	/* prefill list with 1024 elements */
+	for(int i = 0; i < DATA_PREFILL; i++) {
+		l7.insert(uniform_dist(engine));
+	}
+	benchmark(threadcnt, u8"fine_TATAS read", [&l7](int random){
+		read(l7, random);
+	});
+	benchmark(threadcnt, u8"fine_TATAS update", [&l7](int random){
+		update(l7, random);
+	});
+
+	/* start with fresh list: update test left list in random size */
+	sorted_list_fine_TATAS<int> l8;
+	/* prefill list with 1024 elements */
+	for(int i = 0; i < DATA_PREFILL; i++) {
+		l8.insert(uniform_dist(engine));
+	}
+	benchmark(threadcnt, u8"fine_TATAS mixed", [&l8](int random){
+		mixed(l8, random);
+	});
+	l7 = sorted_list_fine_TATAS<int>();
+	l8 = sorted_list_fine_TATAS<int>();
 	std::cout<<"Done";
 
 	return EXIT_SUCCESS;
