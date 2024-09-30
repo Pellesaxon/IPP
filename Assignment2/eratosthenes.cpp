@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
     //         n_primes++;
     //     }
     // }
-    std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
+    // std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
 
     return 0;
 }
