@@ -9,7 +9,7 @@
 #include <vector>
 
 
-std::vector<int> initial_primes(int max, std::vector<bool> &is_prime) { //compute initial primes first up to sqrt(max) (sequentially), because they are used for parallel part
+std::vector<int> initial_primes(int max, bool *is_prime) { //compute initial primes first up to sqrt(max) (sequentially), because they are used for parallel part
     int limit = static_cast<int>(std::sqrt(max));
     std::vector<int> init_primes;
 
@@ -24,7 +24,7 @@ std::vector<int> initial_primes(int max, std::vector<bool> &is_prime) { //comput
     return init_primes;
 }
 
-void thread_primes(int start, int end, const std::vector<int>& init_primes, std::vector<bool>& is_primes) { //the threads compute primes on their local vector
+void thread_primes(int start, int end, const std::vector<int>& init_primes, bool *is_primes) { //the threads compute primes on their local vector
     for (int p : init_primes) {
         for (int i = start; i <= end; i++) {
             if (i%p == 0) 
@@ -68,7 +68,11 @@ int main(int argc, char *argv[]) {
 
     auto start_time = std::chrono::high_resolution_clock::now(); //start time here??
 
-    std::vector<bool> is_prime(max + 1, true);
+    bool *is_prime = new bool[max + 1];
+    for(int i = 0; i < max +1; i++ ){
+        is_prime[i] = true;
+    }
+
     is_prime[0] = is_prime[1] = false;
     std::vector<int> init_primes = initial_primes(max, is_prime);
 
@@ -83,7 +87,7 @@ int main(int argc, char *argv[]) {
         int start = range_start + i * chunk_size;
         int end = (i == num_threads - 1) ? max : start + chunk_size - 1;
 
-        t[i] = std::thread(thread_primes, start, end, std::cref(init_primes), std::ref(is_prime));
+        t[i] = std::thread(thread_primes, start, end, std::cref(init_primes), is_prime);
     }
 
     for (int i=0; i<num_threads; ++i)
@@ -97,14 +101,14 @@ int main(int argc, char *argv[]) {
     std::cout << "Time: " << elapsed.count() << " seconds" << std::endl;
 
     //for validation
-    int n_primes = 0;
-    for (int i=0; i <= max; i++){
+    // int n_primes = 0;
+    // for (int i=0; i <= max; i++){
         
-        if (is_prime[i]) {
-            n_primes++;
-        }
-    }
-    std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
+    //     if (is_prime[i]) {
+    //         n_primes++;
+    //     }
+    // }
+    // std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
 
     return 0;
 }
