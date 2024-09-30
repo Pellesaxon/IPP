@@ -101,13 +101,13 @@ int main(int argc, char *argv[]) {
     std::cout << "Time: " << elapsed.count() << " seconds" << std::endl;
 
     //for validation
-    int n_primes = 0;
-    for (int i=0; i <= max; i++){
+    // int n_primes = 0;
+    // for (int i=0; i <= max; i++){
         
-        if (is_prime[i]) {
-            n_primes++;
-        }
-    }
+    //     if (is_prime[i]) {
+    //         n_primes++;
+    //     }
+    // }
     std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
 
     return 0;
