@@ -13,24 +13,40 @@ class sorted_list_fine_CLH {
 	/* struct for list nodes */
 	private:
 
-		/* Based on proposed structure from lecture as well as the course book*/
-		class CLHlock {
+		/* Based on proposed structure from lecture as well as the course book
+		https://stackoverflow.com/questions/2785612/c-what-does-the-colon-after-a-constructor-mean
+		https://www.cs.rochester.edu/research/synchronization/pseudocode/ss.html#clh
+		https://codereview.stackexchange.com/questions/184407/c11-clh-lock-implementation
+		*/
+		class CLHlock {	
+		public: 
 			struct Qnode{
 				std::atomic_bool locked {true};
 			};
-			std::atomic_ref<Qnode> tail = &Qnode();
-			
-			thread_local static Qnode my_node;
+		
+		private:
+			std::atomic<Qnode *> tail;
+			thread_local static std::unique_ptr<Qnode> my_node;
 			thread_local static Qnode* my_pred;
-			
-			public: void lock() {
-				my_node = Qnode();
-				my_pred = &tail.exchange(my_node);
-				while(my_pred.locked.load()){}
+		
+		public: 
+			CLHlock(){
+				tail = new Qnode();
 			}
-			public: void unlock() {
-				my_node.locked.store(false);
-				my_node = my_pred;
+			void lock() {
+				my_node->locked.store(true);
+				my_pred = tail.exchange(my_node.get());
+				while(my_pred->locked.load()){}
+			}
+			void unlock() {
+				my_node->locked.store(false);
+				//recyle handlar om att dessa värden är threadspecific och vi kan då se till att de bara använder sina två qnodes
+				Qnode* tmp = my_pred;
+				my_pred = my_node.release();
+				my_node.reset(tmp);
+			}
+			~CLHlock(){
+				delete tail;
 			}
 		};
 
@@ -53,7 +69,10 @@ class sorted_list_fine_CLH {
 		 * The first is required due to the others,
 		 * which are explicitly listed due to the rule of five.
 		 */
-		sorted_list_fine_CLH() = default;
+		sorted_list_fine_CLH() {
+			// thread_local std::unique_ptr<CLHlock::Qnode> CLHlock::my_node(new CLHlock::Qnode);
+			// thread_local CLHlock::Qnode* CLHlock::my_pred = nullptr;
+		};
 		sorted_list_fine_CLH(const sorted_list_fine_CLH<T>& other) = default;
 		sorted_list_fine_CLH(sorted_list_fine_CLH<T>&& other) = default;
 		sorted_list_fine_CLH<T>& operator=(const sorted_list_fine_CLH<T>& other) = default;
