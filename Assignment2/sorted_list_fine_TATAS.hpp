@@ -16,12 +16,9 @@ class sorted_list_fine_TATAS {
 		/* Based on proposed structure from lecture*/
 		class TATASlock {
 			std::atomic_bool ready {false};
-			public: bool get() {
-				return ready.load();
-			}
 			public: void lock() {
 				while (true){
-					while (get()) {}
+					while (ready.load()) {}
 					if (!ready.exchange(true))
 					return;
 				}
