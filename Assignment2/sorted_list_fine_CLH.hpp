@@ -22,7 +22,7 @@ class sorted_list_fine_CLH {
 		class CLHlock {	
 		public: 
 			struct Qnode{
-				std::atomic_bool locked {true};
+				std::atomic_bool locked {false};
 			};
 		
 		public:
@@ -32,19 +32,24 @@ class sorted_list_fine_CLH {
 		
 		public: 
 			CLHlock(){
-				tail = new Qnode();
+				Qnode* tmp = new Qnode();
+				tmp -> locked.store(false);
+				tail = tmp;
 			}
 			void lock() {
 				my_node->locked.store(true);
 				my_pred = tail.exchange(my_node.get());
-				while(my_pred->locked.load()){}
+				while(my_pred->locked.load()){
+					std::cout<<"Stuck in lock ";
+				}
+				std::cout<<"Locked node ";
 			}
 			void unlock() {
 				my_node->locked.store(false);
-				//recyle handlar om att dessa värden är threadspecific och vi kan då se till att de bara använder sina två qnodes
 				Qnode* tmp = my_pred;
 				my_pred = my_node.release();
 				my_node.reset(tmp);
+				std::cout<<"Unlocked node ";
 			}
 			~CLHlock(){
 				delete tail;
