@@ -8,23 +8,24 @@
 
 
 /* non-concurrent sorted singly-linked list */
-template<typename T>
+// Define and initialize thread-local variables
+
+template <typename T>
 class sorted_list_fine_CLH {
 	/* struct for list nodes */
-	private:
-
 		/* Based on proposed structure from lecture as well as the course book
 		https://stackoverflow.com/questions/2785612/c-what-does-the-colon-after-a-constructor-mean
 		https://www.cs.rochester.edu/research/synchronization/pseudocode/ss.html#clh
 		https://codereview.stackexchange.com/questions/184407/c11-clh-lock-implementation
 		*/
+	public:
 		class CLHlock {	
 		public: 
 			struct Qnode{
 				std::atomic_bool locked {true};
 			};
 		
-		private:
+		public:
 			std::atomic<Qnode *> tail;
 			thread_local static std::unique_ptr<Qnode> my_node;
 			thread_local static Qnode* my_pred;
@@ -50,6 +51,7 @@ class sorted_list_fine_CLH {
 			}
 		};
 
+	private:
 		struct node {
 			T value;
 			node* next;
@@ -57,6 +59,9 @@ class sorted_list_fine_CLH {
 		};
 		
 	node* first = nullptr;
+	
+	//thread_local std::unique_ptr<typename CLHlock::Qnode> CLHlock::my_node = new CLHlock::Qnode;
+	//thread_local typename CLHlock::Qnode* CLHlock::my_pred = nullptr;
 
 	public:
 		/* default implementations:
