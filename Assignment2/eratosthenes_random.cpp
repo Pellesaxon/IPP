@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    auto start_time = std::chrono::high_resolution_clock::now(); //start time here??
+    auto start_time = std::chrono::high_resolution_clock::now(); //start time
 
 
     std::vector<int> random_is_prime_shit_idk_man(max+1);
@@ -86,7 +86,6 @@ int main(int argc, char *argv[]) {
     random_is_prime_shit_idk_man[0] = random_is_prime_shit_idk_man[1] = 0;
     std::vector<int> init_primes = initial_primes(max, random_is_prime_shit_idk_man);
     
-    //TODO: Print list to check it is random
 
     int range_start = static_cast<int>(std::sqrt(max)) + 1;
     int range_length = max - range_start + 1;
@@ -98,9 +97,6 @@ int main(int argc, char *argv[]) {
     std::default_random_engine rng(seed);
     std::shuffle(&random_is_prime_shit_idk_man[range_start], &random_is_prime_shit_idk_man[max], rng);
 
-    // for (int i =0; i < random_is_prime_shit_idk_man.size(); i++){
-    //     std::cout << "random_is_prime_shit_idk_man " << random_is_prime_shit_idk_man[i] << " " <<std::endl;
-    // }
 
     //threading
     std::thread *t = new std::thread[num_threads];
@@ -119,22 +115,16 @@ int main(int argc, char *argv[]) {
     }
 
 
-    auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time, makes sense i think??
+    auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time
 
 
     std::chrono::duration<double> elapsed = end_time - start_time;
     std::cout << "Time: " << elapsed.count() << " seconds" << std::endl;
-
-    //for validation
-    // for (int i =0; i < init_primes.size(); i++){
-    //     std::cout << "init_primes " << init_primes[i] << " " <<std::endl;
-    // }
     
     int n_primes = 0;
     for (int i=0; i <= max; i++){
         
         if (random_is_prime_shit_idk_man[i] != 0) {
-            // std::cout << "random_is_prime_shit_idk_man: " << random_is_prime_shit_idk_man[i] << " " <<std::endl;
             n_primes++;
         }
     }

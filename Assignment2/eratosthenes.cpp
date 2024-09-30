@@ -24,7 +24,7 @@ std::vector<int> initial_primes(int max, bool *is_prime) { //compute initial pri
     return init_primes;
 }
 
-void thread_primes(int start, int end, const std::vector<int>& init_primes, bool *is_primes) { //the threads compute primes on their local vector
+void thread_primes(int start, int end, const std::vector<int>& init_primes, bool *is_primes) { 
     for (int p : init_primes) {
         for (int i = start; i <= end; i++) {
             if (i%p == 0) 
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    auto start_time = std::chrono::high_resolution_clock::now(); //start time here??
+    auto start_time = std::chrono::high_resolution_clock::now(); //start time
 
     bool *is_prime = new bool[max + 1];
     for(int i = 0; i < max +1; i++ ){
@@ -95,20 +95,20 @@ int main(int argc, char *argv[]) {
       t[i].join();
     }
 
-    auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time, makes sense i think??
+    auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time
 
     std::chrono::duration<double> elapsed = end_time - start_time;
     std::cout << "Time: " << elapsed.count() << " seconds" << std::endl;
 
     //for validation
-    // int n_primes = 0;
-    // for (int i=0; i <= max; i++){
+    int n_primes = 0;
+    for (int i=0; i <= max; i++){
         
-    //     if (is_prime[i]) {
-    //         n_primes++;
-    //     }
-    // }
-    // std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
+        if (is_prime[i]) {
+            n_primes++;
+        }
+    }
+    std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
 
     return 0;
 }
