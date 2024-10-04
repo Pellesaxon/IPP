@@ -1,4 +1,4 @@
-C++flags = g++ -std=c++11 -Wall -pthread -g
+C++flags = g++ -std=c++11 -Wall -pthread -g -fopenmp
 
 #g++ -Wall -std=c++11 -pthread eratosthenes.cpp -o eratosthenes
 #g++ -Wall -std=c++11 -pthread eratosthenes_random.cpp -o eratosthenes_random
