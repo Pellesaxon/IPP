@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 
     omp_set_dynamic(0);
     omp_set_num_threads(num_threads);
-    # pragma omp parallel 
+    #pragma omp parallel 
     {
         
         
