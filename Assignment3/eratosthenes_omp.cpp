@@ -90,7 +90,6 @@ int main(int argc, char *argv[]) {
         int ID = omp_get_thread_num();
         if(ID==0) {
             num_threads = omp_get_num_threads();
-            std::cout<< "#threads "<<num_threads<<std::endl;
         }
 
         int start = range_start + ID * chunk_size;
@@ -101,7 +100,7 @@ int main(int argc, char *argv[]) {
     auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time
 
     std::chrono::duration<double> elapsed = end_time - start_time;
-    std::cout << "Time: " << elapsed.count() << " seconds" << std::endl;
+    std::cout << "Time: " << elapsed.count() << " seconds for " << num_threads << " threads"<< std::endl;
 
     //for validation
     int n_primes = 0;
@@ -111,7 +110,7 @@ int main(int argc, char *argv[]) {
             n_primes++;
         }
     }
-    std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
+    //std::cout << "Number of primes up to " << max << " is " << n_primes <<std::endl;
 
     return 0;
 }
