@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
     int range_length = max - range_start + 1;
     int chunk_size = range_length/ num_threads;
 
-
+    omp_set_dynamic(0);
     omp_set_num_threads(num_threads);
     # pragma omp parallel 
     {
