@@ -43,7 +43,6 @@ static void free_array(int ** array, int N) {
 
 static void init_random(int ** array1, int ** array2, int N) {
 	int i, pos;
-	
 	for (i = 0 ; i < (N * N)/10 ; i++) {
 		pos = rand() % ((N-2)*(N-2));
 		array1[pos%(N-2)+1][pos/(N-2)+1] = 1;
@@ -73,6 +72,7 @@ static void print_to_pgm(int ** array, int N, int t) {
 int main (int argc, char * argv[]) {
 	int N;	 			//array dimensions
 	int T; 				//time steps
+	int num_threads; 	//Threads to run it on
 	int ** current, ** previous; 	//arrays - one for current timestep, one for previous timestep
 	int ** swap;			//array pointer
 	int t, i, j, nbrs;		//helper variables
@@ -81,13 +81,14 @@ int main (int argc, char * argv[]) {
 	struct timeval ts,tf;
 
 	/*Read input arguments*/
-	if (argc != 3) {
-		fprintf(stderr, "Usage: ./exec ArraySize TimeSteps\n");
+	if (argc != 4) {
+		fprintf(stderr, "Usage: ./exec ArraySize TimeSteps Threads\n");
 		exit(-1);
 	}
 	else {
 		N = atoi(argv[1]);
 		T = atoi(argv[2]);
+		num_threads = atoi(argv[3]);
 	}
 
 	/*Allocate and initialize matrices*/
@@ -100,7 +101,6 @@ int main (int argc, char * argv[]) {
 	print_to_pgm(previous, N, 0);
 	#endif
 
-	int num_threads = 4;
 	omp_set_dynamic(0);
     omp_set_num_threads(num_threads);
 
@@ -108,7 +108,7 @@ int main (int argc, char * argv[]) {
 
 	gettimeofday(&ts,NULL);
 	for (t = 0 ; t < T ; t++) {
-		#pragma omp parallel for collapse(2)
+		#pragma omp parallel for collapse(2) private(nbrs) schedule(auto)
 		for (i = 1 ; i < N-1 ; i++)
 			for (j = 1 ; j < N-1 ; j++) {
 				nbrs = previous[i+1][j+1] + previous[i+1][j] + previous[i+1][j-1] \
@@ -116,9 +116,11 @@ int main (int argc, char * argv[]) {
 					+ previous[i-1][j-1] + previous[i-1][j] + previous[i-1][j+1];
 				if (nbrs == 3 || ( previous[i][j]+nbrs == 3))
 					current[i][j] = 1;
-				else 
+				else {
 					current[i][j] = 0;
+				}
 			}
+			#pragma omp barrier
 			
 		#ifdef OUTPUT
 		print_to_pgm(current, N, t+1);
