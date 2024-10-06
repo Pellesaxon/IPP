@@ -17,8 +17,15 @@ run_eratosthenes: eratosthenes_omp.exe
 gol.exe:
 	$(Cflags) Game_Of_Life.c -o gol
 
-run_gol:
-	
+run_gol: gol.exe
+	chmod +x gol_sc.sh
+	./gol_sc.sh
+
+gol_print.exe:
+	$(Cflags) Game_Of_Life.c -o gol_print -DOUTPUT
+
+run_gol_print: gol_print.exe
+	./gol_print 64 300 4
 
 clean:
 	$(RM) *.exe
