@@ -27,6 +27,12 @@ gol_print.exe:
 run_gol_print: gol_print.exe
 	./gol_print 64 300 4
 
+matrix.exe:
+	$(C++flags) matrix.cpp -o matrix
+
+run_matrix: gol_print.exe
+	./matrix 4 1000
+
 clean:
 	$(RM) *.exe
 	$(RM) *.pgm
