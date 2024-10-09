@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     
 
     auto start_time = std::chrono::high_resolution_clock::now();
-    #pragma omp parallel default(private) shared (a, b, c, dim)
+    #pragma omp parallel default(none) private(i, j, k) shared (a, b, c, dim)
     {
         #pragma omp for schedule(static) collapse(1)
         for (i = 0; i < dim; i++) {
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 
     
     start_time = std::chrono::high_resolution_clock::now();
-    #pragma omp parallel default(private) shared (a, b, c, dim)
+    #pragma omp parallel default(none) private(i, j, k) shared (a, b, c, dim)
     {
         #pragma omp for schedule(static) collapse(2)
         for (i = 0; i < dim; i++) {
@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    #pragma omp parallel default(private) shared (a, b, c, dim)
+    #pragma omp parallel default(none) private(i, j, k) shared (a, b, c, dim)
     {
         #pragma omp for schedule(static) collapse(3)
         for (i = 0; i < dim; i++) {
