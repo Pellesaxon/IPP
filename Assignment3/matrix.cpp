@@ -18,12 +18,12 @@ int main(int argc, char *argv[]) {
     int i,j,k;
 
     if (argc != 3) {
-		fprintf(stderr, "Usage: ./exec Threads Dimentions\n");
+		fprintf(stderr, "Usage: ./exec Dimentions Threads\n");
 		exit(-1);
 	}
 	else {
-		num_threads = std::stoi(argv[1]); 
-        dim = std::stoi(argv[2]);
+		dim = std::stoi(argv[1]); 
+        num_threads= std::stoi(argv[2]);
 	}
     
     std::vector<std::vector<int>> a(dim,std::vector<int>(dim,5));
