@@ -30,8 +30,9 @@ run_gol_print: gol_print.exe
 matrix.exe:
 	$(C++flags) matrix.cpp -o matrix
 
-run_matrix: gol_print.exe
-	./matrix 4 1000
+run_matrix: matrix.exe
+	chmod +x matrix_sc.sh
+	./matrix_sc.sh
 
 clean:
 	$(RM) *.exe

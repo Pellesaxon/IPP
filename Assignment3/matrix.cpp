@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 	else {
-		num_threads = std::stoi(argv[1]); // 1, 2 or 3 depening on number of loops to paralleliz
+		num_threads = std::stoi(argv[1]); 
         dim = std::stoi(argv[2]);
 	}
     
@@ -48,13 +48,13 @@ int main(int argc, char *argv[]) {
     
 
     auto start_time = std::chrono::high_resolution_clock::now();
-    #pragma omp parallel default(none) private(i, j, k) shared (a, b, c, dim)
+    #pragma omp parallel default(none) private(i, j, k) shared (a, b, c, dim) 
     {
         #pragma omp for schedule(static) collapse(1)
         for (i = 0; i < dim; i++) {
             for (j = 0; j < dim; j++) {
                 for (k = 0; k < dim; k++) {
-                    if (k == 0){
+                    if (!(k)){
                         c[i][j] = 0;
                     }
                     c[i][j] += a[i][k] * b[k][j];
@@ -72,11 +72,11 @@ int main(int argc, char *argv[]) {
     start_time = std::chrono::high_resolution_clock::now();
     #pragma omp parallel default(none) private(i, j, k) shared (a, b, c, dim)
     {
-        #pragma omp for schedule(static) collapse(2)
+        #pragma omp for schedule(static) collapse(2) // 1, 2 or 3 depening on number of loops to paralleliz
         for (i = 0; i < dim; i++) {
             for (j = 0; j < dim; j++) {
                 for (k = 0; k < dim; k++) {
-                    if (k == 0){
+                    if (!(k)){
                         c[i][j] = 0;
                     }
                     c[i][j] += a[i][k] * b[k][j];
@@ -93,11 +93,11 @@ int main(int argc, char *argv[]) {
     start_time = std::chrono::high_resolution_clock::now();
     #pragma omp parallel default(none) private(i, j, k) shared (a, b, c, dim)
     {
-        #pragma omp for schedule(static) collapse(3)
+        #pragma omp for schedule(static) collapse(3) // 1, 2 or 3 depening on number of loops to paralleliz
         for (i = 0; i < dim; i++) {
             for (j = 0; j < dim; j++) {
                 for (k = 0; k < dim; k++) {
-                    if (k == 0){
+                    if (!(k)){
                         c[i][j] = 0;
                     }
                     c[i][j] += a[i][k] * b[k][j];
