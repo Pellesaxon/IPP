@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     auto start_time = std::chrono::high_resolution_clock::now();
     #pragma omp parallel default(none) private(i, j, k) shared (a, b, c, dim) 
     {
-        #pragma omp for schedule(static) collapse(1)
+        #pragma omp for schedule(static) collapse(1) // 1, 2 or 3 depening on number of loops to paralleliz
         for (i = 0; i < dim; i++) {
             for (j = 0; j < dim; j++) {
                 for (k = 0; k < dim; k++) {
