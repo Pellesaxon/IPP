@@ -79,17 +79,19 @@ int main(int argc, char *argv[]) {
 
     int range_start = static_cast<int>(std::sqrt(max)) + 1;
     int range_length = max - range_start + 1;
-    int chunk_size = range_length/ num_threads;
 
     omp_set_dynamic(0);
     omp_set_num_threads(num_threads);
-    #pragma omp parallel 
+    int chunk_size;
+    #pragma omp parallel shared(num_threads, chunk_size)
     {
         
         
         int ID = omp_get_thread_num();
-        if(ID==0) {
-            num_threads = omp_get_num_threads();
+        #pragma omp single
+        {
+        num_threads = omp_get_num_threads();
+        chunk_size = range_length/ num_threads;
         }
 
         int start = range_start + ID * chunk_size;
