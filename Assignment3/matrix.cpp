@@ -26,11 +26,6 @@ int main(int argc, char *argv[]) {
         dim = std::stoi(argv[2]);
 	}
     
-    if (num_threads < 1 || num_threads > 64 ) {
-        fprintf(stderr, "Dont get out of hand with threads\n");
-		exit(-1);
-    }
-    
     std::vector<std::vector<int>> a(dim,std::vector<int>(dim,5));
     std::vector<std::vector<int>> b(dim,std::vector<int>(dim,5));
     std::vector<std::vector<int>> c(dim,std::vector<int>(dim,5));
