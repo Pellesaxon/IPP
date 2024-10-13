@@ -36,12 +36,11 @@ int main(int argc, char *argv[]) {
 
     auto start_time = std::chrono::high_resolution_clock::now();
 
-    #pragma omp parallel for schedule(runtime)
     for (int row = 0; row < matrix_size; row++)
         x[row] = b[row];
     for (int col = matrix_size-1; col >= 0; col--) {
         x[col] /= A[col][col];
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(runtime)
         for (int row = 0; row < col; row++)
             x[row] -= A[row][col] * x[col];
         }
