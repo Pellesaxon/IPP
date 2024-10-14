@@ -6,7 +6,13 @@ Cflags = gcc -Wall -fopenmp -pthread
 
 
 all:
-	
+	$(MAKE) eratosthenes_omp.exe
+	$(MAKE) gol.exe
+	$(MAKE) gol_print.exe
+	$(MAKE) matrix.exe
+	$(MAKE) gaus_row.exe
+	$(MAKE) gaus_col.exe
+
 eratosthenes_omp.exe:
 	$(C++flags) eratosthenes_omp.cpp -o eratosthenes_omp
 
@@ -47,6 +53,7 @@ run_gaus: gaus_row.exe gaus_col.exe
 	./gaus_col 6400 8
 	./gaus_col 6400 4
 	./gaus_col 6400 2
+	
 clean:
 	$(RM) *.exe
 	$(RM) *.pgm
