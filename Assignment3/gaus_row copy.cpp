@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     for (int row = matrix_size-1; row >= 0; row--) {
         x[row] = b[row];   
 
-        #pragma omp parallel for private(val) reduction(-:sum) schedule(runtime)
+        #pragma omp parallel for private(val) reduction(-:sum) schedule(static)
         for (int col = row+1; col < matrix_size; col++) {
             val = A[row][col] * x[col];
             sum -= val;
