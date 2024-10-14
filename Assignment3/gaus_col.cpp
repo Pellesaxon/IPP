@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
         x[row] = b[row];
     for (int col = matrix_size-1; col >= 0; col--) {
         x[col] /= A[col][col];
-        #pragma omp parallel for schedule(static)
+        #pragma omp parallel for shared(A, b, x) schedule(static)
         for (int row = 0; row < col; row++)
             x[row] -= A[row][col] * x[col];
     }
