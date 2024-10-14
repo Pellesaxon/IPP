@@ -28,7 +28,26 @@ int main(int argc, char *argv[]) {
 
     
     std::vector<std::vector<double>> A(matrix_size,std::vector<double>(matrix_size,5));
-    std::vector<double> b(matrix_size,5);
+    for (int row = 0; row < matrix_size; row++){
+        for (int col = 0; col < matrix_size; col++){
+            if (col<row){
+                A[row][col] = 0;
+            }
+            else {
+                A[row][col] = row + col ;
+            }
+        }
+    }
+
+    // for (int i = 0; i<matrix_size; i++){
+    //     for (int j = 0; j<matrix_size; j++){
+    //         std::cout << A[i][j] << " ";
+    //     }
+    //     std::cout << "\n";
+    // }
+
+
+    std::vector<double> b(matrix_size,3);
     std::vector<double> x(matrix_size,0);
 
     omp_set_dynamic(0);
@@ -43,7 +62,11 @@ int main(int argc, char *argv[]) {
         #pragma omp parallel for schedule(runtime)
         for (int row = 0; row < col; row++)
             x[row] -= A[row][col] * x[col];
-        }
+    }
+
+    // for (int i= 0; i<matrix_size; i++)
+    //     std::cout << x[i] << " ";
+    // std::cout << "\n";
 
     auto end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end_time - start_time;

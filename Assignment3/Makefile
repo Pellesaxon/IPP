@@ -34,6 +34,19 @@ run_matrix: matrix.exe
 	chmod +x matrix_sc.sh
 	./matrix_sc.sh
 
+gaus_row.exe:
+	$(C++flags) gaus_row.cpp -o gaus_row
+
+gaus_col.exe:
+	$(C++flags) gaus_col.cpp -o gaus_col
+
+run_gaus: gaus_row.exe gaus_col.exe
+	./gaus_row 6400 8
+	./gaus_row 6400 4
+	./gaus_row 6400 2
+	./gaus_col 6400 8
+	./gaus_col 6400 4
+	./gaus_col 6400 2
 clean:
 	$(RM) *.exe
 	$(RM) *.pgm
