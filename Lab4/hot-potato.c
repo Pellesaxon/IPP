@@ -63,13 +63,9 @@ int main(int argc, char *argv[argc + 1]) {
       msg[1] = counter;
       MPI_Send(msg, 2, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
-
-  }
+  return 0;
+}
   /* TODO: In a loop: */
   /* TODO: Receive loser and counter from the previous process. */
   /* TODO: Check if counter is 0, decrement it, and set loser accordingly. */
   /* TODO: Send loser and counter to the next process. */
-
-  
-  return 0;
-}
