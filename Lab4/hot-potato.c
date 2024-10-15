@@ -37,7 +37,7 @@ int main(int argc, char *argv[argc + 1]) {
   int counter = -1;
   
   if (!rank) {
-    loser = -1;
+    loser = rank;
     counter = atoi(argv[1]);
     msg[0] = loser;
     msg[1] = counter;
@@ -46,7 +46,6 @@ int main(int argc, char *argv[argc + 1]) {
 
   while (true){
     MPI_Recv(msg, MAX_MSG_SIZE, MPI_INT, ((rank-1)%(size)), 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //assert(MPI_Get_count(&status, datatype, &recvd_count) == 2);
     loser = msg[0];
     counter = msg[1];
     if (counter == 0){
@@ -55,6 +54,7 @@ int main(int argc, char *argv[argc + 1]) {
           MPI_Finalize();
         }
       MPI_Send(msg, 2, MPI_INT, ((rank+1)%(size)), 0, MPI_COMM_WORLD);
+      MPI_Finalize();
       }
     else{
       counter--;
