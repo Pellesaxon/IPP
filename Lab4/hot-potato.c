@@ -41,6 +41,7 @@ int main(int argc, char *argv[argc + 1]) {
     counter = atoi(argv[1]);
     msg[0] = loser;
     msg[1] = counter;
+    printf(msg);
     MPI_Send(msg, 2, MPI_INT, ((rank+1)%(size)), 0, MPI_COMM_WORLD);
   }
 
@@ -48,6 +49,7 @@ int main(int argc, char *argv[argc + 1]) {
     MPI_Recv(msg, MAX_MSG_SIZE, MPI_INT, ((rank-1)%(size)), 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     loser = msg[0];
     counter = msg[1];
+    printf(msg);
     if (counter == 0){
       if (!rank) {
         printf("Process %d lost. Total %d processes.\n", loser, size);
