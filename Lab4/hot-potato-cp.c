@@ -52,7 +52,7 @@ int main(int argc, char *argv[argc + 1]) {
     next = rank +1;
   }
 
-  while (true)
+  while (1)
   {
     MPI_Recv(&loser,1,MPI_INT,prev,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
     MPI_Recv(&counter,1,MPI_INT,prev,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
