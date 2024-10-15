@@ -18,9 +18,13 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
+
+#define MAX_NAME_SIZE 42
+#define MAX_MSG_SIZE 2
 
 int main(int argc, char *argv[argc + 1]) {
-
+  int msg[MAX_MSG_SIZE], name[MAX_NAME_SIZE];
   MPI_Init(&argc, &argv);
 
   int rank;
@@ -30,12 +34,33 @@ int main(int argc, char *argv[argc + 1]) {
 
   int loser;
   int counter;
-
+  
   if (!rank) {
     loser = -1;
     counter = atoi(argv[1]);
+    msg[0] = loser;
+    msg[1] = counter
+    MPI_Send(msg, 2, MPI_INT, 0, 0, MPI_COMM_WORLD);
   }
 
+  while{
+    MPI_Recv(msg, MAX_MSG_SIZE, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    assert(MPI_Get_count(&status, datatype, &recvd_count) == 2);
+    loser = msg[0];
+    counter = msg[1];
+    if  (counter == 0){
+      MPI_Send(msg, 2, MPI_INT, 0, 0, MPI_COMM_WORLD);
+      break;
+    }
+    else{
+      counter--;
+      loser = rank;
+      msg[0] = loser;
+      msg[1] = counter
+      MPI_Send(msg, 2, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    }
+
+  }
   /* TODO: In a loop: */
   /* TODO: Receive loser and counter from the previous process. */
   /* TODO: Check if counter is 0, decrement it, and set loser accordingly. */
