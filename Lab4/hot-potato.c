@@ -50,12 +50,11 @@ int main(int argc, char *argv[argc + 1]) {
     counter = msg[1];
     if (counter == 0){
       if (!rank) {
-          printf("Process %d lost. Total %d processes.\n", loser, size);
-          MPI_Finalize();
-          break;
-        }
-      MPI_Send(msg, 2, MPI_INT, ((rank+1)%(size)), 0, MPI_COMM_WORLD);
-      MPI_Finalize();
+        printf("Process %d lost. Total %d processes.\n", loser, size);
+      }
+      if (loser != rank){
+        MPI_Send(msg, 2, MPI_INT, ((rank+1)%(size)), 0, MPI_COMM_WORLD);
+      }
       break;
       }
     else{
@@ -66,6 +65,7 @@ int main(int argc, char *argv[argc + 1]) {
       MPI_Send(msg, 2, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
   }
+  MPI_Finalize();
   return 0;
 }
   /* TODO: In a loop: */
