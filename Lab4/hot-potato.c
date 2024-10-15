@@ -40,17 +40,21 @@ int main(int argc, char *argv[argc + 1]) {
     counter = atoi(argv[1]);
     msg[0] = loser;
     msg[1] = counter;
-    MPI_Send(msg, 2, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    MPI_Send(msg, 2, MPI_INT, ((rank+1)%(size)), 0, MPI_COMM_WORLD);
   }
 
-  while (counter =! 0){
-    MPI_Recv(msg, MAX_MSG_SIZE, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  while (true){
+    MPI_Recv(msg, MAX_MSG_SIZE, MPI_INT, ((rank-1)%(size)), 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     //assert(MPI_Get_count(&status, datatype, &recvd_count) == 2);
     loser = msg[0];
     counter = msg[1];
-    if  (counter == 0){
-      MPI_Send(msg, 2, MPI_INT, 0, 0, MPI_COMM_WORLD);
-      break;
+    if (counter == 0){
+      if (!rank) {
+          printf("Process %d lost. Total %d processes.\n", loser, size);
+          MPI_Finalize();
+        }
+      MPI_Send(msg, 2, MPI_INT, ((rank+1)%(size)), 0, MPI_COMM_WORLD);
+      }
     }
     else{
       counter--;
@@ -66,10 +70,6 @@ int main(int argc, char *argv[argc + 1]) {
   /* TODO: Check if counter is 0, decrement it, and set loser accordingly. */
   /* TODO: Send loser and counter to the next process. */
 
-  if (!rank) {
-    printf("Process %d lost. Total %d processes.\n", loser, size);
-  }
-
-  MPI_Finalize();
+  
   return 0;
 }
