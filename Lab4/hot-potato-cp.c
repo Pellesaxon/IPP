@@ -36,7 +36,7 @@ int main(int argc, char *argv[argc + 1]) {
   if (!rank) {
     loser = -1;
     counter = atoi(argv[1]);
-    prev = -1
+    prev = -1;
     
   }
   else{
