@@ -59,13 +59,13 @@ int main(int argc, char *argv[argc + 1]) {
     if (counter != 0){
       counter--;
       loser = rank;
-      MPI_Send(&loser,1,MPI_INT,next,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
-      MPI_Send(&counter,1,MPI_INT,next,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+      MPI_Send(&loser,1,MPI_INT,next,0,MPI_COMM_WORLD);
+      MPI_Send(&counter,1,MPI_INT,next,0,MPI_COMM_WORLD);
     }
     else {
       
-      MPI_Send(&loser,1,MPI_INT,next,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
-      MPI_Send(&counter,1,MPI_INT,next,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+      MPI_Send(&loser,1,MPI_INT,next,0,MPI_COMM_WORLD);
+      MPI_Send(&counter,1,MPI_INT,next,0,MPI_COMM_WORLD);
       break;
     }
   }
