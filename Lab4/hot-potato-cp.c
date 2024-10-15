@@ -52,7 +52,7 @@ int main(int argc, char *argv[argc + 1]) {
     next = rank +1;
   }
   if (!rank){
-    loser = 0;
+    loser = rank;
     MPI_Send(&loser,1,MPI_INT,next,0,MPI_COMM_WORLD);
     MPI_Send(&counter,1,MPI_INT,next,0,MPI_COMM_WORLD);
   }
