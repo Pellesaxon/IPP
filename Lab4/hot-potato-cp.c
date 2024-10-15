@@ -51,6 +51,10 @@ int main(int argc, char *argv[argc + 1]) {
   else {
     next = rank +1;
   }
+  if (!rank){
+    MPI_Send(&loser,1,MPI_INT,next,0,MPI_COMM_WORLD);
+    MPI_Send(&counter,1,MPI_INT,next,0,MPI_COMM_WORLD);
+  }
 
   while (1)
   {
