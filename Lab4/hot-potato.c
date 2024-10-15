@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #define MAX_NAME_SIZE 42
 #define MAX_MSG_SIZE 2
