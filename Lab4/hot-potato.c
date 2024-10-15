@@ -55,7 +55,6 @@ int main(int argc, char *argv[argc + 1]) {
         }
       MPI_Send(msg, 2, MPI_INT, ((rank+1)%(size)), 0, MPI_COMM_WORLD);
       }
-    }
     else{
       counter--;
       loser = rank;
@@ -63,6 +62,7 @@ int main(int argc, char *argv[argc + 1]) {
       msg[1] = counter;
       MPI_Send(msg, 2, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
+  }
   return 0;
 }
   /* TODO: In a loop: */
