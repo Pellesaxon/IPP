@@ -87,7 +87,11 @@ int main(int argc, char *argv[]) {
         //save you primes to msg, send msg
         for (int prime_index = 0; prime_index < (end-start); prime_index++){
             msg[prime_index] = is_prime[start+prime_index];
+            if (is_prime[start+prime_index]){
+                std::cout << "Process " << rank <<" thinks that" << prime_index+start <<"is a prime" << "\n";
+            }
         }
+        
         std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) << "\n";
         MPI_Send(msg, end-start+1, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD); //+1 on end-start????
 
