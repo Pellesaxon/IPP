@@ -117,6 +117,7 @@ int main(int argc, char *argv[]) {
         int n_primes = 0;
         for (int i=0; i <= max; i++){
             if (is_prime[i]) {
+                std::cout <<"Prime: " << i << std::endl;
                 n_primes++;
             }
         }
