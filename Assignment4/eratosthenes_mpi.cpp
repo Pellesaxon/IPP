@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
             for (int i = 0; i < size_recieved; i++){
                 is_prime[prime_index] = msg[i];
                 std::cout <<"Compiled is_prime for index: " << prime_index << "\n";
-                if (is_prime[start+prime_index]){
+                if (is_prime[prime_index]){
                     std::cout << "Process " << prosses_rank <<" thinks that " << prime_index <<" is a prime" << "\n";
                 }
                 prime_index++;
