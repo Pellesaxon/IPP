@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     
-    if (std::string(argv[1]) == "-h" || std::string(argv[2]) == "-h") {
+    if (std::string(argv[1]) == "-h") {
         print_help();
         return 0;
     }
