@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
             msg[prime_index] = is_prime[start+prime_index];
         }
         std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) << "\n";
-        MPI_Send(msg, end-start, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD); //+1 on end-start????
+        MPI_Send(msg, end-start+1, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD); //+1 on end-start????
 
     if (!rank){
         MPI_Status status;
