@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 
     bool *final_primes = new bool[max + 1];
     
-    MPI_Reduce(is_prime,final_primes,max+1,MPI_C_BOOL,MPI_LOR,0,MPI_COMM_WORLD);
+    MPI_Reduce(is_prime,final_primes,max+1,MPI_C_BOOL,MPI_LAND,0,MPI_COMM_WORLD);
     
     if (!rank){
         auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
         int n_primes = 0;
         for (int i=0; i <= max; i++){
             if (final_primes[i]) {
-                // std::cout <<"Prime: " << i << std::endl;
+                std::cout <<"Prime: " << i << std::endl;
                 n_primes++;
             }
         }
