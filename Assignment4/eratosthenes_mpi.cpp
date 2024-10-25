@@ -26,7 +26,7 @@ void thread_primes(int start, int end, const std::vector<int>& init_primes, bool
     for (int p : init_primes) {
         for (int i = start; i <= end; i++) {
             if (i%p == 0) {
-                std::cout << i << " is not a prime"<< std::endl;
+                // std::cout << i << " is not a prime"<< std::endl;
                 is_primes[i] = false;
             }
                 
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
             msg[msg_index] = is_prime[start+msg_index];
         }
         
-        std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) << " and has start_index = " << start << " and message[0] = " << msg[0] <<"\n";
+        // std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) << " and has start_index = " << start << " and message[0] = " << msg[0] <<"\n";
         MPI_Send(msg, end-start+1, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD); //+1 on end-start????
     }
         
@@ -100,20 +100,20 @@ int main(int argc, char *argv[]) {
     if (!rank){
         MPI_Status status;
         int size_recieved;
-        std::cout <<  "Entered !rank" << std::endl;
+        // std::cout <<  "Entered !rank" << std::endl;
         int prime_index = end+1;
         for (int prosses_rank = 1; prosses_rank < size;prosses_rank++){
-            std::cout << "Prosses rank = "<<  prosses_rank << std::endl;
+            // std::cout << "Prosses rank = "<<  prosses_rank << std::endl;
             MPI_Recv(msg, MAX_MSG_SIZE, MPI_C_BOOL, prosses_rank, 0, MPI_COMM_WORLD, &status);
-            std::cout <<"Recived msg from prosess" << prosses_rank << "\n";
+            // std::cout <<"Recived msg from prosess" << prosses_rank << "\n";
             MPI_Get_count(&status, MPI_C_BOOL, &size_recieved);
 
             for (int i = 0; i < size_recieved; i++){
                 is_prime[prime_index] = msg[i];
-                std::cout <<"Compiled is_prime for index: " << prime_index << "\n";
-                if (is_prime[prime_index]){
-                    std::cout << "Process " << prosses_rank <<" thinks that " << prime_index <<" is a prime" << "\n";
-                }
+                // std::cout <<"Compiled is_prime for index: " << prime_index << "\n";
+                // if (is_prime[prime_index]){
+                    // std::cout << "Process " << prosses_rank <<" thinks that " << prime_index <<" is a prime" << "\n";
+                // }
                 prime_index++;
             }
         }
@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
         int n_primes = 0;
         for (int i=0; i <= max; i++){
             if (is_prime[i]) {
-                std::cout <<"Prime: " << i << std::endl;
+                // std::cout <<"Prime: " << i << std::endl;
                 n_primes++;
             }
         }
