@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
         MPI_Status status;
         int size_recieved;
         std::cout <<  "entered !rank" << std::endl;
-        for (int prosses_rank = 1; prosses_rank < size;){
+        for (int prosses_rank = 1; prosses_rank < size;prosses_rank++){
             std::cout << "prosses rank:"<<  prosses_rank << std::endl;
             MPI_Recv(msg, MAX_MSG_SIZE, MPI_C_BOOL, prosses_rank, 0, MPI_COMM_WORLD, &status);
             std::cout <<"Recived msg from prosess" << prosses_rank << "\n";
