@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     thread_primes(start, end, init_primes, is_prime);
     
 
-    int MAX_MSG_SIZE = chunk_size+size
+    int MAX_MSG_SIZE = chunk_size+size;
     bool msg[MAX_MSG_SIZE];
     if (rank)
         //save you primes to msg, send msg
