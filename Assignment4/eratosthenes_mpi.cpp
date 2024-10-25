@@ -25,9 +25,11 @@ std::vector<int> initial_primes(int max, bool *is_prime) { //compute initial pri
 void thread_primes(int start, int end, const std::vector<int>& init_primes, bool *is_primes) { 
     for (int p : init_primes) {
         for (int i = start; i <= end; i++) {
-            if (i%p == 0) 
+            if (i%p == 0) {
                 std::cout << i << " is not a prime"<< std::endl;
                 is_primes[i] = false;
+            }
+                
         }
     }
     return;
