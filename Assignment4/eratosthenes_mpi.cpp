@@ -1,12 +1,8 @@
 #include <iostream>
 #include <vector>
-#include <thread>
 #include <functional>
-#include <mutex>
-#include <cmath>
 #include <string>
 #include <chrono>
-#include <vector>
 #include <mpi.h>
 
 
