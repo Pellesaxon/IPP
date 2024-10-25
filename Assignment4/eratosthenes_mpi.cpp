@@ -95,6 +95,7 @@ int main(int argc, char *argv[]) {
         MPI_Status status;
         int size_recieved;
         std::cout <<  "entered !rank" << std::endl;
+        int prime_index = 0;
         for (int prosses_rank = 1; prosses_rank < size;prosses_rank++){
             std::cout << "prosses rank:"<<  prosses_rank << std::endl;
             MPI_Recv(msg, MAX_MSG_SIZE, MPI_C_BOOL, prosses_rank, 0, MPI_COMM_WORLD, &status);
@@ -102,7 +103,9 @@ int main(int argc, char *argv[]) {
             MPI_Get_count(&status, MPI_C_BOOL, &size_recieved);
 
             for (int i = 0; i < size_recieved; i++){
-                is_prime[prosses_rank*chunk_size + i] = msg[i];
+                is_prime[prime_index] = msg[i];
+                std::cout <<"Compiled is_prime for index: " << prime_index << "\n";
+                prime_index++;
             }
         }
             
