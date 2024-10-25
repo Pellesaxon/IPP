@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     bool msg[MAX_MSG_SIZE];
     if (rank){
         //save you primes to msg, send msg
-        for (int msg_index = 0; msg_index < (end-start); msg_index++){
+        for (int msg_index = 0; msg_index < (end-start+1); msg_index++){
             msg[msg_index] = is_prime[start+msg_index];
         }
         
