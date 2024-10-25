@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     
 
     int MAX_MSG_SIZE = chunk_size+size;
-    bool msg[MAX_MSG_SIZE];
+    bool* msg = new bool[MAX_MSG_SIZE];
     if (rank){
         //save you primes to msg, send msg
         for (int msg_index = 0; msg_index < (end-start+1); msg_index++){
