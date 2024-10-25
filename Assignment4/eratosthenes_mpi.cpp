@@ -65,15 +65,13 @@ int main(int argc, char *argv[]) {
 
     is_prime[0] = is_prime[1] = false;
     std::vector<int> init_primes = initial_primes(max, is_prime);
-
+    
 
     MPI_Init(&argc, &argv);
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int size;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    int MAX_MSG_SIZE = chunk_size+size
-    bool msg[MAX_MSG_SIZE];
     
 
     int range_start = static_cast<int>(std::sqrt(max)) + 1;
@@ -86,6 +84,8 @@ int main(int argc, char *argv[]) {
     thread_primes(start, end, init_primes, is_prime);
     
 
+    int MAX_MSG_SIZE = chunk_size+size
+    bool msg[MAX_MSG_SIZE];
     if (rank)
         //save you primes to msg, send msg
         for (int prime_index = 0; prime_index <= (end-start); prime_index++){
