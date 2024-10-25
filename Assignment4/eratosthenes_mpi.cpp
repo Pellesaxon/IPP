@@ -87,9 +87,6 @@ int main(int argc, char *argv[]) {
         //save you primes to msg, send msg
         for (int prime_index = 0; prime_index < (end-start); prime_index++){
             msg[prime_index] = is_prime[start+prime_index];
-            if (is_prime[start+prime_index]){
-                std::cout << "Process " << rank <<" thinks that" << prime_index+start <<"is a prime" << "\n";
-            }
         }
         
         std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) << "\n";
@@ -111,6 +108,9 @@ int main(int argc, char *argv[]) {
             for (int i = 0; i < size_recieved; i++){
                 is_prime[prime_index] = msg[i];
                 std::cout <<"Compiled is_prime for index: " << prime_index << "\n";
+                if (is_prime[start+prime_index]){
+                    std::cout << "Process " << prosses_rank <<" thinks that " << prime_index <<" is a prime" << "\n";
+                }
                 prime_index++;
             }
         }
