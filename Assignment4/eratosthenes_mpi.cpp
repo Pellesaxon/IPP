@@ -2,6 +2,7 @@
 #include <vector>
 #include <functional>
 #include <string>
+#include <cmath>
 #include <chrono>
 #include <mpi.h>
 
@@ -87,7 +88,7 @@ int main(int argc, char *argv[]) {
         for (int prime_index = 0; prime_index < (end-start); prime_index++){
             msg[prime_index] = is_prime[start+prime_index];
         }
-        std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) "\n";
+        std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) << "\n";
         MPI_Send(msg, end-start, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD); //+1 on end-start????
 
     if (!rank){
