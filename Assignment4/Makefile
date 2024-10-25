@@ -27,7 +27,7 @@ run_eratosthenes_all: eratosthenes_mpi.exe
 	mpiexec -np 96 --hostfile hosts ./eratosthenes_mpi 10000000
 
 eratosthenes_mpi_bc.exe:
-	$(C++MPIflags) eratosthenes_mpi.cpp -o eratosthenes_mpi
+	$(C++MPIflags) eratosthenes_mpi_bc.cpp -o eratosthenes_mpi_bc
 
 run_eratosthenes_bc: eratosthenes_mpi_bc.exe
 	mpiexec -np 1 --hostfile hosts ./eratosthenes_mpi_bc 10000000
@@ -36,7 +36,7 @@ run_eratosthenes_bc: eratosthenes_mpi_bc.exe
 	mpiexec -np 32 --hostfile hosts ./eratosthenes_mpi_bc 10000000
 	mpiexec -np 64 --hostfile hosts ./eratosthenes_mpi_bc 10000000
 	mpiexec -np 96 --hostfile hosts ./eratosthenes_mpi_bc 10000000
-	
+
 clean:
 	$(RM) *.exe
 	$(RM) *.pgm
