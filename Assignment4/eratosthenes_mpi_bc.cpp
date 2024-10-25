@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 
     
         
-    MPI_Reduce(&is_prime,&is_prime,max+1,MPI_C_BOOL,MPI_BOR,0,MPI_COMM_WORLD);
+    MPI_Reduce(is_prime,is_prime,max+1,MPI_C_BOOL,MPI_BOR,0,MPI_COMM_WORLD);
     if (!rank){
         auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time
         std::chrono::duration<double> elapsed = end_time - start_time;
