@@ -8,6 +8,7 @@ C++MPIflags = mpic++ -g
 
 all:
 	$(MAKE) eratosthenes_mpi.exe
+	$(MAKE) eratosthenes_mpi_bc.exe:
 
 eratosthenes_mpi.exe:
 	$(C++MPIflags) eratosthenes_mpi.cpp -o eratosthenes_mpi
