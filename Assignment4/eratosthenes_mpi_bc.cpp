@@ -80,15 +80,11 @@ int main(int argc, char *argv[]) {
     chunk_size = range_length/ size;
     int start = range_start + rank * chunk_size;
     int end = (rank == size - 1) ? max : start + chunk_size - 1;
-
-    //MPI_Bcast(&is_prime,max+1, MPI_C_BOOL, 0, MPI_COMM_WORLD); //WE DONT THINK THIS IS USEFUL SO YEAH
     
     thread_primes(start, end, init_primes, is_prime);
 
     
         
-    // std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) << " and has start_index = " << start << " and message[0] = " << msg[0] <<"\n";
-     //+1 on end-start????
     
 
     bool *final_primes = new bool[max + 1];

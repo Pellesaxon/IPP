@@ -92,28 +92,21 @@ int main(int argc, char *argv[]) {
             msg[msg_index] = is_prime[start+msg_index];
         }
         
-        // std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) << " and has start_index = " << start << " and message[0] = " << msg[0] <<"\n";
-        MPI_Send(msg, end-start+1, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD); //+1 on end-start????
+        MPI_Send(msg, end-start+1, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD); 
     }
         
 
     if (!rank){
         MPI_Status status;
         int size_recieved;
-        // std::cout <<  "Entered !rank" << std::endl;
+        
         int prime_index = end+1;
-        for (int prosses_rank = 1; prosses_rank < size; prosses_rank++){
-            // std::cout << "Prosses rank = "<<  prosses_rank << std::endl;
-            MPI_Recv(msg, MAX_MSG_SIZE, MPI_C_BOOL, prosses_rank, 0, MPI_COMM_WORLD, &status);
-            // std::cout <<"Recived msg from prosess" << prosses_rank << "\n";
+        for (int process_rank = 1; process_rank < size; process_rank++){
+            MPI_Recv(msg, MAX_MSG_SIZE, MPI_C_BOOL, process_rank, 0, MPI_COMM_WORLD, &status);
             MPI_Get_count(&status, MPI_C_BOOL, &size_recieved);
 
             for (int i = 0; i < size_recieved; i++){
                 is_prime[prime_index] = msg[i];
-                // std::cout <<"Compiled is_prime for index: " << prime_index << "\n";
-                // if (is_prime[prime_index]){
-                    // std::cout << "Process " << prosses_rank <<" thinks that " << prime_index <<" is a prime" << "\n";
-                // }
                 prime_index++;
             }
         }
