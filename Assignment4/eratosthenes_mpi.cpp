@@ -26,6 +26,7 @@ void thread_primes(int start, int end, const std::vector<int>& init_primes, bool
     for (int p : init_primes) {
         for (int i = start; i <= end; i++) {
             if (i%p == 0) 
+                std::cout << i << " is not a prime"<< std::endl;
                 is_primes[i] = false;
         }
     }
@@ -85,11 +86,11 @@ int main(int argc, char *argv[]) {
     bool msg[MAX_MSG_SIZE];
     if (rank){
         //save you primes to msg, send msg
-        for (int prime_index = 0; prime_index < (end-start); prime_index++){
-            msg[prime_index] = is_prime[start+prime_index];
+        for (int msg_index = 0; msg_index < (end-start); msg_index++){
+            msg[msg_index] = is_prime[start+msg_index];
         }
         
-        std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) << "\n";
+        std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) << " and has start_index = " << start <<"\n";
         MPI_Send(msg, end-start+1, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD); //+1 on end-start????
     }
         
