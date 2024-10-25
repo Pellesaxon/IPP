@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
     int start = range_start + rank * chunk_size;
     int end = (rank == size - 1) ? max : start + chunk_size - 1;
 
-    MPI_Bcast(&is_prime,max+1, MPI_C_BOOL, 0, MPI_COMM_WORLD); //WE DONT THINK THIS IS USEFUL SO YEAH
+    //MPI_Bcast(&is_prime,max+1, MPI_C_BOOL, 0, MPI_COMM_WORLD); //WE DONT THINK THIS IS USEFUL SO YEAH
     
     thread_primes(start, end, init_primes, is_prime);
 
