@@ -84,17 +84,20 @@ int main(int argc, char *argv[]) {
     bool msg[MAX_MSG_SIZE];
     if (rank)
         //save you primes to msg, send msg
-        for (int prime_index = 0; prime_index <= (end-start); prime_index++){
+        for (int prime_index = 0; prime_index < (end-start); prime_index++){
             msg[prime_index] = is_prime[start+prime_index];
         }
-        MPI_Send(msg, end-start+1, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD); //+1 on end-start????
+        std::cout << "Process " << rank <<" sends msg of size " << (end-start+1) "\n";
+        MPI_Send(msg, end-start, MPI_C_BOOL, 0, 0, MPI_COMM_WORLD); //+1 on end-start????
 
     if (!rank){
         MPI_Status status;
         int size_recieved;
-
+        std::cout <<  "entered !rank" << std::endl;
         for (int prosses_rank = 1; prosses_rank < size;){
+            std::cout << "prosses rank:"<<  prosses_rank << std::endl;
             MPI_Recv(msg, MAX_MSG_SIZE, MPI_C_BOOL, prosses_rank, 0, MPI_COMM_WORLD, &status);
+            std::cout <<"Recived msg from prosess" << prosses_rank << "\n";
             MPI_Get_count(&status, MPI_C_BOOL, &size_recieved);
 
             for (int i = 0; i < size_recieved; i++){
