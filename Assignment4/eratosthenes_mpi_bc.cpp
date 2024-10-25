@@ -91,9 +91,10 @@ int main(int argc, char *argv[]) {
      //+1 on end-start????
     
 
+    bool *final_primes = new bool[max + 1];
     
-        
-    MPI_Reduce(is_prime,is_prime,max+1,MPI_C_BOOL,MPI_LOR,0,MPI_COMM_WORLD);
+    MPI_Reduce(is_prime,final_primes,max+1,MPI_C_BOOL,MPI_LOR,0,MPI_COMM_WORLD);
+    
     if (!rank){
         auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time
         std::chrono::duration<double> elapsed = end_time - start_time;
@@ -102,7 +103,7 @@ int main(int argc, char *argv[]) {
         //for validation
         int n_primes = 0;
         for (int i=0; i <= max; i++){
-            if (is_prime[i]) {
+            if (final_primes[i]) {
                 // std::cout <<"Prime: " << i << std::endl;
                 n_primes++;
             }
