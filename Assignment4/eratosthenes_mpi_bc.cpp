@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
         
 
     if (!rank){
-        MPI_Reduce_c(&is_prime,&is_prime,count,MPI_C_BOOL,MPI_BOR,0,MPI_COMM_WORLD);
+        MPI_Reduce(&is_prime,&is_prime,count,MPI_C_BOOL,MPI_BOR,0,MPI_COMM_WORLD);
         
             
         auto end_time = std::chrono::high_resolution_clock::now(); //where we end the time
