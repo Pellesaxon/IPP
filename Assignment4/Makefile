@@ -1,6 +1,6 @@
 C++flags = g++ -std=c++11 -Wall -pthread -g -fopenmp
 Cflags = gcc -Wall -fopenmp -pthread
-C++MPIflags = mpicc 
+C++MPIflags = mpic++ -g
 #g++ -Wall -std=c++11 -pthread eratosthenes.cpp -o eratosthenes
 #g++ -Wall -std=c++11 -pthread eratosthenes_random.cpp -o eratosthenes_random
 #chmod +x eratosthenes_sc.sh
@@ -23,8 +23,8 @@ run_eratosthenes_all: eratosthenes_mpi.exe
 	mpiexec -np 2 --hostfile hosts ./eratosthenes_mpi 10000000
 	mpiexec -np 16 --hostfile hosts ./eratosthenes_mpi 10000000
 	mpiexec -np 32 --hostfile hosts ./eratosthenes_mpi 10000000
-	mpiexec -np 64 --hostfile host ./eratosthenes_mpi 10000000
-	mpiexec -np 96 --hostfile host ./eratosthenes_mpi 10000000
+	mpiexec -np 64 --hostfile hosts ./eratosthenes_mpi 10000000
+	mpiexec -np 96 --hostfile hosts ./eratosthenes_mpi 10000000
 
 run_eratosthenes_Bcast:
 	

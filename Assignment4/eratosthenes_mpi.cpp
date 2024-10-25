@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
         int size_recieved;
         // std::cout <<  "Entered !rank" << std::endl;
         int prime_index = end+1;
-        for (int prosses_rank = 1; prosses_rank < size;prosses_rank++){
+        for (int prosses_rank = 1; prosses_rank < size; prosses_rank++){
             // std::cout << "Prosses rank = "<<  prosses_rank << std::endl;
             MPI_Recv(msg, MAX_MSG_SIZE, MPI_C_BOOL, prosses_rank, 0, MPI_COMM_WORLD, &status);
             // std::cout <<"Recived msg from prosess" << prosses_rank << "\n";
